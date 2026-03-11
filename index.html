@@ -44,6 +44,15 @@
 
         .nav-links a:hover { color: var(--main-pink); }
 
+        /* 汉堡菜单按钮 */
+        .menu-toggle {
+            display: none; background: none; border: none; color: var(--main-pink);
+            font-size: 24px; cursor: pointer; z-index: 1001; padding: 0;
+            font-family: monospace;
+        }
+
+        .menu-toggle:hover { color: white; }
+
         /* 右上角悬浮切换按钮 */
         #lang-switch {
             position: fixed; top: 80px; right: 20px;
@@ -301,7 +310,7 @@
             #home {
                 flex-direction: column;
                 height: auto;
-                padding: 100px 5% 50px;
+                padding: 140px 5% 50px;
                 gap: 30px;
             }
 
@@ -379,20 +388,51 @@
             }
 
             nav {
-                flex-direction: column;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
                 padding: 12px 15px;
-                gap: 10px;
+                gap: 0;
+            }
+
+            .nav-logo {
+                font-family: 'Press Start 2P'; 
+                color: var(--main-pink); 
+                font-size: 14px;
+            }
+
+            .menu-toggle {
+                display: block;
             }
 
             .nav-links {
-                display: flex;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 10, 0.98);
+                border-bottom: 1px solid #333;
                 flex-direction: column;
-                gap: 5px;
+                gap: 12px;
+                padding: 15px;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.3s ease;
+            }
+
+            .nav-links.active {
+                max-height: 300px;
             }
 
             .nav-links a {
                 margin-left: 0;
                 font-size: 11px;
+                padding: 8px 0;
+                border-bottom: 1px solid #333;
+            }
+
+            .nav-links a:last-child {
+                border-bottom: none;
             }
 
             #lang-switch {
@@ -441,7 +481,7 @@
         @media (max-width: 480px) {
             /* 小型手机屏幕 */
             #home {
-                padding: 80px 5% 40px;
+                padding: 100px 5% 40px;
             }
 
             .hero-img {
@@ -530,8 +570,16 @@
                 padding: 10px 12px;
             }
 
+            .nav-logo {
+                font-size: 12px;
+            }
+
+            .menu-toggle {
+                font-size: 20px;
+            }
+
             .nav-links a {
-                font-size: 10px;
+                font-size: 9px;
             }
 
             #lang-switch {
@@ -576,8 +624,9 @@
     <button id="lang-switch" onclick="toggleLang()">EN / 中</button>
 
     <nav>
-        <div style="font-family: 'Press Start 2P'; color: var(--main-pink); font-size: 14px;">ANNIE.CHEN</div>
-        <div class="nav-links">
+        <div class="nav-logo">ANNIE.CHEN</div>
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+        <div class="nav-links" id="navLinks">
             <a href="#home" data-key="nav-home">主页</a>
             <a href="#experience" data-key="nav-exp">经历</a>
             <a href="#projects" data-key="nav-proj">作品</a>
@@ -591,7 +640,7 @@
             <p id="hero-desc" style="max-width: 550px; font-size: 16px; color: var(--text-gray);">
                 中山大学经济学本科生，具备卓越的商业分析能力与跨学科技术实践背景。雅思 7.5，熟练掌握 Python 与前端开发。
             </p>
-            <p class="motto">// YOUR ENGLISH MOTTO GOES HERE</p>
+            <p class="motto">I never throw away my shot.</p>
         </div>
     </section>
 
@@ -607,6 +656,16 @@
                 <h3 style="color:var(--main-pink); margin-bottom: 10px;">统战部 | UFWD</h3>
                 <p style="font-size: 13px; color: #888; margin-bottom: 15px;">2025.02 - 2025.03 | <span data-key="pos-staff">干事</span></p>
                 <p data-key="exp-uf" style="font-size: 14px;">独立撰写致商会新春贺信，获科室采纳。参与宗教场所安全排查与文件归档。</p>
+            </div>
+            <div class="exp-card">
+                <h3 style="color:var(--main-pink); margin-bottom: 10px;">中山大学团委学术部 | SYSU Youth League</h3>
+                <p style="font-size: 13px; color: #888; margin-bottom: 15px;">2024.09 - 至今 | <span data-key="pos-vice-director">副委员</span></p>
+                <p data-key="exp-sysu-league" style="font-size: 14px;">负责学术交流活动的策划与组织，参与校级学术竞赛等项目的执行与推广。</p>
+            </div>
+            <div class="exp-card">
+                <h3 style="color:var(--main-pink); margin-bottom: 10px;">英语辩论队 & 外语协会 | Debate & Language Club</h3>
+                <p style="font-size: 13px; color: #888; margin-bottom: 15px;">2024.09 - 至今 | <span data-key="pos-member">成员</span></p>
+                <p data-key="exp-debate" style="font-size: 14px;">参与校内外英语辩论赛事，提升语言表达与逻辑思维能力。积极参加外语文化交流活动。</p>
             </div>
         </div>
     </section>
@@ -676,6 +735,22 @@
     </div>
 
     <script>
+        /* --- 汉堡菜单切换函数 --- */
+        function toggleMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active');
+        }
+
+        // 点击导航链接时关闭菜单
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('.nav-links a');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    document.getElementById('navLinks').classList.remove('active');
+                });
+            });
+        });
+
         /* --- 语言数据包 --- */
         const translations = {
             'zh': {
@@ -683,14 +758,11 @@
                 'title-exp': '实践经历', 'title-proj': '视觉成果集', 'title-work': '工作记录', 'title-contact': '与我联络',
                 'hero-desc': '中山大学经济学本科生，具备卓越的商业分析能力与跨学科技术实践背景。雅思 7.5，熟练掌握 Python 与前端开发。',
                 'exp-gs': '参与公司晨会，汇报行业动态与政策信息。协助客户开户与投资者教育，参与银行拜访。',
-                'exp-uf': '独立撰写致商会新春贺信，获科室采纳。参与宗教场所安全排查与文件归档。',
+                'exp-uf': '撰写致商会新春贺信，获科室采纳。参与宗教场所安全排查与文件归档。',
+                'exp-sysu-league': '负责学术交流活动的策划与组织，参与校级学术竞赛等项目的执行与推广。',
+                'exp-debate': '参与校内外英语辩论赛事，提升语言表达与逻辑思维能力。积极参加外语文化交流活动。',
                 'proj-esg': 'ESG 应用', 'proj-design': '视觉设计', 'proj-loreal': '欧莱雅设计',
-                'pos-intern': '实习生', 'pos-staff': '干事',
-                'esg-desc': '主导 UI 原型设计与产品功能策划，融合商业逻辑与用户体验。',
-                'design-desc': '校级比赛海报制作与推文全流程统筹。',
-                'loreal-desc': '欧莱雅"Brandstorm"商赛前端UI与海报设计，生产和定价。',
-                'view-project': '查看项目',
-                'pos-intern': '实习生', 'pos-staff': '干事',
+                'pos-intern': '实习生', 'pos-staff': '干事', 'pos-vice-director': '副委员', 'pos-member': '成员',
                 'esg-desc': '主导 UI 原型设计与产品功能策划，融合商业逻辑与用户体验。',
                 'design-desc': '校级比赛海报制作与推文全流程统筹。',
                 'loreal-desc': '欧莱雅"Brandstorm"商赛前端UI与海报设计，生产和定价。',
@@ -702,13 +774,10 @@
                 'hero-desc': 'Economics undergrad at Sun Yat-sen University. Expert in business analysis with a tech edge. IELTS 7.5, proficient in Python & Front-end.',
                 'exp-gs': 'Participated in morning meetings, reported on industry trends. Assisted in client account opening and investor education.',
                 'exp-uf': 'Drafted official letters for chambers of commerce. Conducted safety inspections and document management.',
+                'exp-sysu-league': 'Responsible for planning and organizing academic exchange activities and promoting campus-level academic competitions.',
+                'exp-debate': 'Participated in English debate competitions inside and outside campus, enhancing language expressions and critical thinking. Actively engaged in foreign language and cultural exchange activities.',
                 'proj-esg': 'ESG APP', 'proj-design': 'VISUAL DESIGN', 'proj-loreal': 'FORE-FRONT DESIGN',
-                'pos-intern': 'Intern', 'pos-staff': 'Staff',
-                'esg-desc': 'Led UI prototyping and product planning.',
-                'design-desc': 'Coordination of campus event posters and social media content.',
-                'loreal-desc': 'Loreal "Brandstorm" front-end UI and poster design, production and pricing.',
-                'view-project': 'View Project',
-                'pos-intern': 'Intern', 'pos-staff': 'Staff',
+                'pos-intern': 'Intern', 'pos-staff': 'Staff', 'pos-vice-director': 'Vice Director', 'pos-member': 'Member',
                 'esg-desc': 'Led UI prototyping and product planning.',
                 'design-desc': 'Coordination of campus event posters and social media content.',
                 'loreal-desc': 'Loreal "Brandstorm" front-end UI and poster design, production and pricing.',
