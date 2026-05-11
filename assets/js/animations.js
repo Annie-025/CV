@@ -2,7 +2,7 @@ const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)
 const isTouchDevice = window.matchMedia("(hover: none), (pointer: coarse)").matches;
 
 function initLenis() {
-    if (prefersReducedMotion || typeof Lenis === "undefined") return;
+    if (prefersReducedMotion || isTouchDevice || typeof Lenis === "undefined") return;
 
     window.lenis = new Lenis({
         duration: 1.22,
@@ -51,7 +51,7 @@ function initHeroMotion() {
 
     const titleLetters = gsap.utils.toArray(".hero__title span");
 
-    gsap.set([".reveal-text", ".hero__desc", ".motto", ".hero__actions", ".hero__portrait-wrap"], {
+    gsap.set([".reveal-text", ".hero__desc", ".motto", ".hero__actions", ".hero__portrait-motion"], {
         y: 26,
         opacity: 0
     });
@@ -66,7 +66,7 @@ function initHeroMotion() {
         duration: 1.12
     })
         .to(".reveal-text", { y: 0, opacity: 1, duration: 0.75 }, 0.12)
-        .to(".hero__portrait-wrap", { y: 0, opacity: 1, duration: 1.2 }, 0.3)
+        .to(".hero__portrait-motion", { y: 0, opacity: 1, duration: 1.2 }, 0.3)
         .to([".hero__desc", ".motto", ".hero__actions"], {
             y: 0,
             opacity: 1,
@@ -86,7 +86,7 @@ function initHeroMotion() {
         }
     });
 
-    gsap.to(".hero__portrait-wrap", {
+    gsap.to(".hero__portrait-motion", {
         yPercent: 12,
         scrollTrigger: {
             trigger: ".hero",
@@ -180,17 +180,8 @@ function initScrollStories() {
             scrollTrigger: {
                 trigger: card,
                 start: "top 86%"
-            }
-        });
-    });
-
-    gsap.utils.toArray(".project-orb").forEach((orb) => {
-        gsap.to(orb, {
-            y: -18,
-            duration: 2.8,
-            ease: "sine.inOut",
-            repeat: -1,
-            yoyo: true
+            },
+            clearProps: "transform"
         });
     });
 
@@ -207,21 +198,37 @@ function initScrollStories() {
 function initProjectViewerMotion() {
     if (!window.gsap || prefersReducedMotion) return;
 
-    const viewer = document.getElementById("projectViewer");
     const panel = document.querySelector(".viewer-panel");
     const backdrop = document.querySelector(".viewer-backdrop");
 
+    window.playProjectViewerClose = () => new Promise((resolve) => {
+        gsap.timeline({ onComplete: resolve })
+            .to(panel, {
+                y: 14,
+                opacity: 0,
+                scale: 0.992,
+                duration: 0.24,
+                ease: "power2.inOut"
+            }, 0)
+            .to(backdrop, {
+                opacity: 0,
+                duration: 0.24,
+                ease: "power2.inOut"
+            }, 0);
+    });
+
     window.addEventListener("projectViewer:open", () => {
+        if (window.ScrollTrigger) ScrollTrigger.refresh();
         gsap.fromTo(backdrop, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out" });
         gsap.fromTo(panel, {
-            y: 44,
+            y: 22,
             opacity: 0,
             scale: 0.985
         }, {
             y: 0,
             opacity: 1,
             scale: 1,
-            duration: 0.72,
+            duration: 0.62,
             ease: "power3.out"
         });
         gsap.fromTo(".viewer-meta > *, .viewer-gallery img", {
@@ -230,7 +237,7 @@ function initProjectViewerMotion() {
         }, {
             y: 0,
             opacity: 1,
-            duration: 0.62,
+            duration: 0.58,
             stagger: 0.045,
             ease: "power3.out",
             delay: 0.12
@@ -238,7 +245,7 @@ function initProjectViewerMotion() {
     });
 
     window.addEventListener("projectViewer:close", () => {
-        gsap.set(viewer, { clearProps: "all" });
+        gsap.set([panel, backdrop], { clearProps: "all" });
     });
 }
 

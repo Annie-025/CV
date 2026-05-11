@@ -69,12 +69,14 @@
                     </div>
                 </div>
 
-                <div class="hero__portrait-wrap" data-parallax-depth="34">
-                    <div class="hero__portrait-glow"></div>
-                    <div class="hero-img magnetic" role="img" aria-label="Annie Chen portrait"></div>
-                    <div class="hero__status glass-panel">
-                        <span class="status-dot"></span>
-                        <span data-key="hero-status">OPEN TO CREATIVE STRATEGY</span>
+                <div class="hero__portrait-motion">
+                    <div class="hero__portrait-wrap" data-parallax-depth="34">
+                        <div class="hero__portrait-glow"></div>
+                        <div class="hero-img" role="img" aria-label="Annie Chen portrait"></div>
+                        <div class="hero__status glass-panel">
+                            <span class="status-dot"></span>
+                            <span data-key="hero-status">OPEN TO CREATIVE STRATEGY</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -124,25 +126,46 @@
                 <h2 class="section-title" data-key="title-proj">视觉成果集</h2>
             </div>
             <div class="project-grid">
-                <article class="proj-item glass-card magnetic" data-project="esg" tabindex="0" role="button">
-                    <div class="project-orb">ESG</div>
-                    <div class="project-card-copy">
-                        <span data-key="proj-esg">ESG 应用</span>
+                <article class="proj-item glass-card" data-project="esg" tabindex="0" role="button" aria-label="Open ESG case study">
+                    <div class="project-card-header">
+                        <span class="project-index">01</span>
+                        <span class="project-type" data-key="proj-esg-type">CASE FILE / PRODUCT</span>
+                    </div>
+                    <div class="project-card-body">
+                        <h3>ESG APP DESIGN</h3>
                         <p data-key="proj-esg-sub">产品原型 / 商业逻辑 / 用户体验</p>
                     </div>
-                </article>
-                <article class="proj-item glass-card magnetic" data-project="design" tabindex="0" role="button">
-                    <div class="project-orb">VD</div>
-                    <div class="project-card-copy">
-                        <span data-key="proj-design">视觉设计</span>
-                        <p data-key="proj-design-sub">校园传播 / 海报系统 / 内容统筹</p>
+                    <div class="project-card-footer">
+                        <span data-key="proj-esg-role">ROLE: Product Design</span>
+                        <span class="project-enter" data-key="open-case">OPEN CASE →</span>
                     </div>
                 </article>
-                <article class="proj-item glass-card magnetic" data-project="loreal" tabindex="0" role="button">
-                    <div class="project-orb">LB</div>
-                    <div class="project-card-copy">
-                        <span data-key="proj-loreal">欧莱雅设计</span>
+                <article class="proj-item glass-card" data-project="design" tabindex="0" role="button" aria-label="Open visual design case study">
+                    <div class="project-card-header">
+                        <span class="project-index">02</span>
+                        <span class="project-type" data-key="proj-design-type">CASE FILE / VISUAL SYSTEM</span>
+                    </div>
+                    <div class="project-card-body">
+                        <h3>VISUAL DESIGN</h3>
+                        <p data-key="proj-design-sub">校园传播 / 海报系统 / 内容统筹</p>
+                    </div>
+                    <div class="project-card-footer">
+                        <span data-key="proj-design-role">ROLE: Visual Direction</span>
+                        <span class="project-enter" data-key="open-case">OPEN CASE →</span>
+                    </div>
+                </article>
+                <article class="proj-item glass-card" data-project="loreal" tabindex="0" role="button" aria-label="Open L'Oreal case study">
+                    <div class="project-card-header">
+                        <span class="project-index">03</span>
+                        <span class="project-type" data-key="proj-loreal-type">CASE FILE / BRAND EXPERIENCE</span>
+                    </div>
+                    <div class="project-card-body">
+                        <h3>L'OREAL BRANDSTORM</h3>
                         <p data-key="proj-loreal-sub">Brandstorm / 前端 UI / 定价策略</p>
+                    </div>
+                    <div class="project-card-footer">
+                        <span data-key="proj-loreal-role">ROLE: Front-end UI</span>
+                        <span class="project-enter" data-key="open-case">OPEN CASE →</span>
                     </div>
                 </article>
             </div>
@@ -193,8 +216,7 @@
                 <p class="eyebrow" id="viewerKicker">CASE STUDY</p>
                 <h2 id="viewerTitle">TITLE</h2>
                 <p id="viewerDesc"></p>
-                <div class="viewer-tags" id="viewerTags"></div>
-                <div class="viewer-timeline" id="viewerTimeline"></div>
+                <div class="viewer-data-grid" id="viewerDataGrid"></div>
                 <div id="viewerButtons" class="viewer-buttons"></div>
             </div>
             <div class="viewer-gallery" id="viewerGallery"></div>

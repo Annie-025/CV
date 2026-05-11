@@ -30,6 +30,15 @@ No npm install, backend, build step, or server runtime is required.
 
 The animation layer is defensive: if GSAP, ScrollTrigger, Lenis, or reduced-motion settings are unavailable, the page still renders and remains usable.
 
+## Round 2 Fixes
+
+- Project viewer now locks background scrolling while allowing the viewer content to scroll fully.
+- Lenis is paused when a project opens and restarted when it closes.
+- Mobile/touch devices use native scrolling instead of Lenis and custom cursor effects.
+- Project cards no longer use orb/glass sphere visuals; they are HUD-style digital archive cards.
+- Theme tokens were consolidated around deep black and pink, with blue/cyan/violet accents removed.
+- Viewer content now includes Role, Tools, Timeline, Outcome, and a project link when available.
+
 ## GitHub Pages Notes
 
 - Keep `index.html` in the repository root.

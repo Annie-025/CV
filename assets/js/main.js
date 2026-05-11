@@ -23,6 +23,17 @@ const translations = {
         "proj-esg-sub": "产品原型 / 商业逻辑 / 用户体验",
         "proj-design-sub": "校园传播 / 海报系统 / 内容统筹",
         "proj-loreal-sub": "Brandstorm / 前端 UI / 定价策略",
+        "proj-esg-type": "CASE FILE / PRODUCT",
+        "proj-design-type": "CASE FILE / VISUAL SYSTEM",
+        "proj-loreal-type": "CASE FILE / BRAND EXPERIENCE",
+        "proj-esg-role": "ROLE: Product Design",
+        "proj-design-role": "ROLE: Visual Direction",
+        "proj-loreal-role": "ROLE: Front-end UI",
+        "open-case": "OPEN CASE →",
+        "viewer-role": "Role",
+        "viewer-tools": "Tools",
+        "viewer-timeline": "Timeline",
+        "viewer-outcome": "Outcome",
         "pos-intern": "实习生",
         "pos-staff": "干事",
         "pos-vice-director": "副委员",
@@ -53,6 +64,17 @@ const translations = {
         "proj-esg-sub": "Product Prototype / Business Logic / UX",
         "proj-design-sub": "Campus Media / Poster System / Content Ops",
         "proj-loreal-sub": "Brandstorm / Front-end UI / Pricing",
+        "proj-esg-type": "CASE FILE / PRODUCT",
+        "proj-design-type": "CASE FILE / VISUAL SYSTEM",
+        "proj-loreal-type": "CASE FILE / BRAND EXPERIENCE",
+        "proj-esg-role": "ROLE: Product Design",
+        "proj-design-role": "ROLE: Visual Direction",
+        "proj-loreal-role": "ROLE: Front-end UI",
+        "open-case": "OPEN CASE →",
+        "viewer-role": "Role",
+        "viewer-tools": "Tools",
+        "viewer-timeline": "Timeline",
+        "viewer-outcome": "Outcome",
         "pos-intern": "Intern",
         "pos-staff": "Staff",
         "pos-vice-director": "Vice Director",
@@ -72,6 +94,10 @@ const projectData = {
         roles: ["Product Thinking", "UI Prototype", "UX Flow"],
         tech: ["Figma", "Research", "Business Analysis"],
         timeline: ["01 Discovery", "02 IA & Flow", "03 Prototype", "04 Visual System"],
+        outcome: {
+            zh: "完成 ESG 产品原型与视觉叙事，让复杂议题以更清晰的任务流呈现。",
+            en: "Built an ESG prototype and visual narrative that turns complex topics into a clearer task flow."
+        },
         images: ["images/cd1.png", "images/cd2.png", "images/cd3.png", "images/cd4.png", "images/cd5.png", "images/cd6.png", "images/cd7.png", "images/cd8.png"]
     },
     design: {
@@ -84,6 +110,10 @@ const projectData = {
         roles: ["Poster Design", "Content Ops", "Visual Direction"],
         tech: ["Layout", "Typography", "Campaign Assets"],
         timeline: ["01 Brief", "02 Direction", "03 Production", "04 Delivery"],
+        outcome: {
+            zh: "形成更统一的校园传播视觉节奏，提升活动内容的识别度。",
+            en: "Created a more unified visual rhythm for campus communication and event recognition."
+        },
         images: ["images/1.png", "images/笃行致远.png", "images/第一届.png"]
     },
     loreal: {
@@ -96,6 +126,10 @@ const projectData = {
         roles: ["Front-end UI", "Poster Design", "Pricing Narrative"],
         tech: ["HTML", "CSS", "Brand System"],
         timeline: ["01 Concept", "02 Interface", "03 Poster", "04 Launch"],
+        outcome: {
+            zh: "将品牌概念转化为可浏览的前端体验和完整展示素材。",
+            en: "Turned the brand concept into a browsable front-end experience and presentation assets."
+        },
         images: ["images/loreal.jpg", "images/lr1.png", "images/lr2.png", "images/lr3.png", "images/lr4.png", "images/lr5.png", "images/lr6.png"],
         url: "https://annie-025.github.io/City_scent/"
     }
@@ -104,6 +138,7 @@ const projectData = {
 let currentLang = "zh";
 let activeProjectId = null;
 let lastFocusedElement = null;
+let viewerIsClosing = false;
 
 const qs = (selector, scope = document) => scope.querySelector(selector);
 const qsa = (selector, scope = document) => [...scope.querySelectorAll(selector)];
@@ -134,8 +169,9 @@ function toggleMenu(force) {
     button.setAttribute("aria-expanded", String(shouldOpen));
 }
 
-function renderPills(items) {
-    return items.map((item) => `<span>${item}</span>`).join("");
+function renderDataCard(labelKey, value) {
+    const content = Array.isArray(value) ? value.join(" / ") : value;
+    return `<section class="viewer-data-card"><b>${translations[currentLang][labelKey]}</b><span>${content}</span></section>`;
 }
 
 function renderViewer(projectId) {
@@ -145,8 +181,12 @@ function renderViewer(projectId) {
     qs("#viewerKicker").textContent = data.kicker;
     qs("#viewerTitle").textContent = data.title;
     qs("#viewerDesc").textContent = data.descKey[currentLang];
-    qs("#viewerTags").innerHTML = renderPills([...data.roles, ...data.tech]);
-    qs("#viewerTimeline").innerHTML = renderPills(data.timeline);
+    qs("#viewerDataGrid").innerHTML = [
+        renderDataCard("viewer-role", data.roles),
+        renderDataCard("viewer-tools", data.tech),
+        renderDataCard("viewer-timeline", data.timeline),
+        renderDataCard("viewer-outcome", data.outcome[currentLang])
+    ].join("");
     qs("#viewerGallery").innerHTML = data.images
         .map((src, index) => `<img src="${src}" alt="${data.title} visual ${index + 1}" loading="lazy">`)
         .join("");
@@ -157,27 +197,42 @@ function renderViewer(projectId) {
 
 function openViewer(projectId) {
     const viewer = qs("#projectViewer");
+    const panel = qs(".viewer-panel");
+    const gallery = qs("#viewerGallery");
     activeProjectId = projectId;
     lastFocusedElement = document.activeElement;
     renderViewer(projectId);
     viewer.classList.add("is-open");
     viewer.setAttribute("aria-hidden", "false");
     document.body.classList.add("viewer-open");
+    panel.scrollTop = 0;
+    gallery.scrollTop = 0;
+    if (window.lenis?.stop) window.lenis.stop();
     qs(".viewer-close").focus();
     window.dispatchEvent(new CustomEvent("projectViewer:open"));
+    qsa("#viewerGallery img").forEach((img) => {
+        img.addEventListener("load", () => window.ScrollTrigger?.refresh(), { once: true });
+    });
+    requestAnimationFrame(() => window.ScrollTrigger?.refresh());
 }
 
-function closeViewer() {
+async function closeViewer() {
     const viewer = qs("#projectViewer");
-    if (!viewer.classList.contains("is-open")) return;
+    if (!viewer.classList.contains("is-open") || viewerIsClosing) return;
+    viewerIsClosing = true;
+    if (window.playProjectViewerClose) {
+        await window.playProjectViewerClose();
+    }
     viewer.classList.remove("is-open");
     viewer.setAttribute("aria-hidden", "true");
     document.body.classList.remove("viewer-open");
     activeProjectId = null;
+    if (window.lenis?.start) window.lenis.start();
     window.dispatchEvent(new CustomEvent("projectViewer:close"));
     if (lastFocusedElement) {
         lastFocusedElement.focus();
     }
+    viewerIsClosing = false;
 }
 
 function bindNavigation() {
