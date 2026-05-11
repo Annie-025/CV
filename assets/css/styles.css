@@ -26,7 +26,7 @@
 
 html {
     background: var(--bg);
-    scroll-behavior: auto;
+    scroll-behavior: smooth;
 }
 
 body {
@@ -40,11 +40,8 @@ body {
     color: var(--text);
     font-family: "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
     line-height: 1.65;
-    cursor: none;
-}
-
-body.menu-open {
-    overflow: hidden;
+    overflow-y: auto;
+    cursor: auto;
 }
 
 body::before {
@@ -64,7 +61,7 @@ a,
 button,
 [role="button"] {
     color: inherit;
-    cursor: none;
+    cursor: pointer;
 }
 
 img {
@@ -128,39 +125,6 @@ img {
     height: 100%;
     background: linear-gradient(90deg, transparent, var(--pink), var(--pink-hot));
     animation: loadbar 1.4s ease-in-out infinite;
-}
-
-.cursor,
-.cursor--glow {
-    position: fixed;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-    z-index: 9000;
-    transform: translate3d(-50%, -50%, 0);
-}
-
-.cursor {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--text);
-    mix-blend-mode: difference;
-}
-
-.cursor--glow {
-    width: 42px;
-    height: 42px;
-    border: 1px solid rgba(255, 45, 141, 0.42);
-    border-radius: 50%;
-    box-shadow: 0 0 24px rgba(255, 45, 141, 0.22);
-    transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), border-color 0.3s var(--ease-out);
-}
-
-.cursor--glow.is-active {
-    width: 70px;
-    height: 70px;
-    border-color: var(--pink-line);
 }
 
 .glass-panel,
@@ -900,21 +864,6 @@ img {
 }
 
 @media (max-width: 900px) {
-    body {
-        cursor: auto;
-    }
-
-    a,
-    button,
-    [role="button"] {
-        cursor: pointer;
-    }
-
-    .cursor,
-    .cursor--glow {
-        display: none;
-    }
-
     .site-nav {
         top: 12px;
         width: calc(100% - 24px);

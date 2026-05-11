@@ -18,23 +18,20 @@
         <div class="loader__bar"><span></span></div>
     </div>
 
-    <div class="cursor" id="cursor" aria-hidden="true"></div>
-    <div class="cursor cursor--glow" id="cursorGlow" aria-hidden="true"></div>
-
-    <button id="lang-switch" class="magnetic" type="button">EN / 中</button>
+    <button id="lang-switch" type="button">EN / 中</button>
 
     <nav class="site-nav glass-panel" aria-label="Primary navigation">
-        <a class="nav-logo magnetic" href="#home" aria-label="Annie Chen home">ANNIE.CHEN</a>
-        <button class="menu-toggle magnetic" type="button" aria-label="Open menu" aria-expanded="false">
+        <a class="nav-logo" href="#home" aria-label="Annie Chen home">ANNIE.CHEN</a>
+        <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false">
             <span></span>
             <span></span>
         </button>
         <div class="nav-links" id="navLinks">
-            <a class="magnetic" href="#home" data-key="nav-home">主页</a>
-            <a class="magnetic" href="#experience" data-key="nav-exp">经历</a>
-            <a class="magnetic" href="#projects" data-key="nav-proj">作品</a>
-            <a class="magnetic" href="#work" data-key="nav-work">记录</a>
-            <a class="magnetic" href="#contact" data-key="nav-contact">联系</a>
+            <a href="#home" data-key="nav-home">主页</a>
+            <a href="#experience" data-key="nav-exp">经历</a>
+            <a href="#projects" data-key="nav-proj">作品</a>
+            <a href="#work" data-key="nav-work">记录</a>
+            <a href="#contact" data-key="nav-contact">联系</a>
         </div>
     </nav>
 
@@ -64,8 +61,8 @@
                     </p>
                     <p class="motto" data-motto="I never throw away my shot."><span></span></p>
                     <div class="hero__actions">
-                        <a class="btn btn--primary magnetic" href="#projects" data-key="hero-cta">探索作品</a>
-                        <a class="btn btn--ghost magnetic" href="mailto:chenxy2267@mail2.sysu.edu.cn" data-key="hero-mail">联系我</a>
+                        <a class="btn btn--primary" href="#projects" data-key="hero-cta">探索作品</a>
+                        <a class="btn btn--ghost" href="mailto:chenxy2267@mail2.sysu.edu.cn" data-key="hero-mail">联系我</a>
                     </div>
                 </div>
 
@@ -73,10 +70,6 @@
                     <div class="hero__portrait-wrap" data-parallax-depth="34">
                         <div class="hero__portrait-glow"></div>
                         <div class="hero-img" role="img" aria-label="Annie Chen portrait"></div>
-                        <div class="hero__status glass-panel">
-                            <span class="status-dot"></span>
-                            <span data-key="hero-status">OPEN TO CREATIVE STRATEGY</span>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -126,7 +119,7 @@
                 <h2 class="section-title" data-key="title-proj">视觉成果集</h2>
             </div>
             <div class="project-grid">
-                <article class="proj-item glass-card" data-project="esg" tabindex="0" role="button" aria-label="Open ESG case study">
+                <article class="proj-item glass-card" data-target="#case-esg" tabindex="0" role="button" aria-label="Open ESG case study">
                     <div class="project-card-header">
                         <span class="project-index">01</span>
                         <span class="project-type" data-key="proj-esg-type">CASE FILE / PRODUCT</span>
@@ -140,7 +133,7 @@
                         <span class="project-enter" data-key="open-case">OPEN CASE →</span>
                     </div>
                 </article>
-                <article class="proj-item glass-card" data-project="design" tabindex="0" role="button" aria-label="Open visual design case study">
+                <article class="proj-item glass-card" data-target="#case-design" tabindex="0" role="button" aria-label="Open visual design case study">
                     <div class="project-card-header">
                         <span class="project-index">02</span>
                         <span class="project-type" data-key="proj-design-type">CASE FILE / VISUAL SYSTEM</span>
@@ -154,7 +147,7 @@
                         <span class="project-enter" data-key="open-case">OPEN CASE →</span>
                     </div>
                 </article>
-                <article class="proj-item glass-card" data-project="loreal" tabindex="0" role="button" aria-label="Open L'Oreal case study">
+                <article class="proj-item glass-card" data-target="#case-loreal" tabindex="0" role="button" aria-label="Open L'Oreal case study">
                     <div class="project-card-header">
                         <span class="project-index">03</span>
                         <span class="project-type" data-key="proj-loreal-type">CASE FILE / BRAND EXPERIENCE</span>
@@ -169,6 +162,75 @@
                     </div>
                 </article>
             </div>
+
+            <section id="case-esg" class="case-section" data-section>
+                <div class="case-header">
+                    <p class="eyebrow">CASE FILE 01</p>
+                    <h3>ESG APP DESIGN</h3>
+                    <p data-key="case-esg-desc">主导 UI 原型设计与产品功能策划，将 ESG 议题转化为更清晰的用户任务、数据表达与商业逻辑。</p>
+                </div>
+                <div class="case-meta-grid">
+                    <div><b data-key="case-role">Role</b><span>Product Thinking / UI Prototype / UX Flow</span></div>
+                    <div><b data-key="case-tools">Tools</b><span>Figma / Research / Business Analysis</span></div>
+                    <div><b data-key="case-timeline">Timeline</b><span>Discovery / IA & Flow / Prototype / Visual System</span></div>
+                    <div><b data-key="case-outcome">Outcome</b><span data-key="case-esg-outcome">完成 ESG 产品原型与视觉叙事，让复杂议题以更清晰的任务流呈现。</span></div>
+                </div>
+                <div class="case-gallery">
+                    <figure><img src="images/cd1.png" alt="ESG APP DESIGN visual 1" loading="lazy"></figure>
+                    <figure><img src="images/cd2.png" alt="ESG APP DESIGN visual 2" loading="lazy"></figure>
+                    <figure><img src="images/cd3.png" alt="ESG APP DESIGN visual 3" loading="lazy"></figure>
+                    <figure><img src="images/cd4.png" alt="ESG APP DESIGN visual 4" loading="lazy"></figure>
+                    <figure><img src="images/cd5.png" alt="ESG APP DESIGN visual 5" loading="lazy"></figure>
+                    <figure><img src="images/cd6.png" alt="ESG APP DESIGN visual 6" loading="lazy"></figure>
+                    <figure><img src="images/cd7.png" alt="ESG APP DESIGN visual 7" loading="lazy"></figure>
+                    <figure><img src="images/cd8.png" alt="ESG APP DESIGN visual 8" loading="lazy"></figure>
+                </div>
+            </section>
+
+            <section id="case-design" class="case-section" data-section>
+                <div class="case-header">
+                    <p class="eyebrow">CASE FILE 02</p>
+                    <h3>VISUAL DESIGN</h3>
+                    <p data-key="case-design-desc">负责校级比赛海报制作与推文全流程统筹，用统一视觉节奏提升活动传播的辨识度与完成度。</p>
+                </div>
+                <div class="case-meta-grid">
+                    <div><b data-key="case-role">Role</b><span>Poster Design / Content Ops / Visual Direction</span></div>
+                    <div><b data-key="case-tools">Tools</b><span>Layout / Typography / Campaign Assets</span></div>
+                    <div><b data-key="case-timeline">Timeline</b><span>Brief / Direction / Production / Delivery</span></div>
+                    <div><b data-key="case-outcome">Outcome</b><span data-key="case-design-outcome">形成更统一的校园传播视觉节奏，提升活动内容的识别度。</span></div>
+                </div>
+                <div class="case-gallery">
+                    <figure><img src="images/1.png" alt="VISUAL DESIGN visual 1" loading="lazy"></figure>
+                    <figure><img src="images/笃行致远.png" alt="VISUAL DESIGN visual 2" loading="lazy"></figure>
+                    <figure><img src="images/第一届.png" alt="VISUAL DESIGN visual 3" loading="lazy"></figure>
+                </div>
+            </section>
+
+            <section id="case-loreal" class="case-section" data-section>
+                <div class="case-header">
+                    <p class="eyebrow">CASE FILE 03</p>
+                    <h3>L'OREAL BRANDSTORM</h3>
+                    <p data-key="case-loreal-desc">参与欧莱雅 Brandstorm 商赛，负责前端 UI、海报设计、生产与定价表达，将品牌概念转化为可展示体验。</p>
+                </div>
+                <div class="case-meta-grid">
+                    <div><b data-key="case-role">Role</b><span>Front-end UI / Poster Design / Pricing Narrative</span></div>
+                    <div><b data-key="case-tools">Tools</b><span>HTML / CSS / Brand System</span></div>
+                    <div><b data-key="case-timeline">Timeline</b><span>Concept / Interface / Poster / Launch</span></div>
+                    <div><b data-key="case-outcome">Outcome</b><span data-key="case-loreal-outcome">将品牌概念转化为可浏览的前端体验和完整展示素材。</span></div>
+                </div>
+                <div class="case-actions">
+                    <a href="https://annie-025.github.io/City_scent/" target="_blank" rel="noopener noreferrer" class="btn btn--primary" data-key="view-project">查看项目</a>
+                </div>
+                <div class="case-gallery">
+                    <figure><img src="images/loreal.jpg" alt="L'OREAL BRANDSTORM visual 1" loading="lazy"></figure>
+                    <figure><img src="images/lr1.png" alt="L'OREAL BRANDSTORM visual 2" loading="lazy"></figure>
+                    <figure><img src="images/lr2.png" alt="L'OREAL BRANDSTORM visual 3" loading="lazy"></figure>
+                    <figure><img src="images/lr3.png" alt="L'OREAL BRANDSTORM visual 4" loading="lazy"></figure>
+                    <figure><img src="images/lr4.png" alt="L'OREAL BRANDSTORM visual 5" loading="lazy"></figure>
+                    <figure><img src="images/lr5.png" alt="L'OREAL BRANDSTORM visual 6" loading="lazy"></figure>
+                    <figure><img src="images/lr6.png" alt="L'OREAL BRANDSTORM visual 7" loading="lazy"></figure>
+                </div>
+            </section>
         </section>
 
         <section id="work" class="section-shell content-section" data-section>
@@ -202,30 +264,14 @@
         <p class="eyebrow">04 / CONNECT</p>
         <h2 class="section-title" data-key="title-contact">与我联系</h2>
         <div class="footer-actions">
-            <a href="mailto:chenxy2267@mail2.sysu.edu.cn" class="btn btn--primary magnetic">EMAIL</a>
-            <a href="tel:13063036522" class="btn btn--ghost magnetic">CALL</a>
-            <a href="https://www.linkedin.com/in/%E8%8A%AF%E7%BE%BD-%E9%99%88-5a377a3b3/" target="_blank" rel="noopener noreferrer" class="btn btn--ghost magnetic">LINKEDIN</a>
+            <a href="mailto:chenxy2267@mail2.sysu.edu.cn" class="btn btn--primary">EMAIL</a>
+            <a href="tel:13063036522" class="btn btn--ghost">CALL</a>
+            <a href="https://www.linkedin.com/in/%E8%8A%AF%E7%BE%BD-%E9%99%88-5a377a3b3/" target="_blank" rel="noopener noreferrer" class="btn btn--ghost">LINKEDIN</a>
         </div>
     </footer>
 
-    <aside id="projectViewer" class="project-viewer" aria-hidden="true" aria-modal="true" role="dialog">
-        <div class="viewer-backdrop" data-close-viewer></div>
-        <div class="viewer-panel">
-            <button class="viewer-close magnetic" type="button" data-close-viewer aria-label="Close project viewer">CLOSE</button>
-            <div class="viewer-meta">
-                <p class="eyebrow" id="viewerKicker">CASE STUDY</p>
-                <h2 id="viewerTitle">TITLE</h2>
-                <p id="viewerDesc"></p>
-                <div class="viewer-data-grid" id="viewerDataGrid"></div>
-                <div id="viewerButtons" class="viewer-buttons"></div>
-            </div>
-            <div class="viewer-gallery" id="viewerGallery"></div>
-        </div>
-    </aside>
-
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <script src="assets/js/main.js"></script>
     <script src="assets/js/animations.js"></script>
 </body>
