@@ -3,864 +3,208 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Annie Chen | Portfolio</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
-    </style>
-    
-    <style>
-        :root {
-            --bg-color: #0a0a0a;
-            --main-pink: #ff007f; /* 玫粉色 */
-            --text-gray: #cccccc;
-            --pixel-border: 4px solid var(--main-pink);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; font-family: 'GB10830 Bitmap', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-
-        body {
-            background-color: var(--bg-color);
-            color: white;
-            font-family: 'PingFang SC', 'Inter', sans-serif;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
-
-        /* --- 导航栏 --- */
-        nav {
-            position: fixed; top: 0; width: 100%;
-            padding: 20px 50px; background: rgba(10, 10, 10, 0.9);
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 1000; border-bottom: 1px solid #333;
-        }
-
-        .nav-links a {
-            color: white; text-decoration: none; margin-left: 30px;
-            font-family: 'Press Start 2P', cursive; font-size: 14px;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover { color: var(--main-pink); }
-
-        /* 汉堡菜单按钮 */
-        .menu-toggle {
-            display: none; background: none; border: none; color: var(--main-pink);
-            font-size: 24px; cursor: pointer; z-index: 1001; padding: 0;
-            font-family: monospace;
-        }
-
-        .menu-toggle:hover { color: white; }
-
-        /* 右上角悬浮切换按钮 */
-        #lang-switch {
-            position: fixed; top: 80px; right: 20px;
-            background: var(--main-pink); color: white;
-            border: none; padding: 10px 15px;
-            font-family: 'Press Start 2P', cursive; font-size: 10px;
-            cursor: pointer; z-index: 1001; box-shadow: 4px 4px 0px #55002b;
-        }
-
-        /* --- 主展示区 (Hero) --- */
-        #home {
-            height: 100vh; display: flex; align-items: center; justify-content: center;
-            padding: 0 10%; gap: 60px;
-        }
-
-        .hero-img {
-            width: 320px; height: 380px;
-            border: var(--pixel-border);
-            border-radius: 20px; /* 圆角矩形 */
-            overflow: hidden;
-            box-shadow: 0 0 25px var(--main-pink);
-            
-            /* 📸 【修改头像图片位置】 ----------------------- */
-            background: url('images/avatar.jpg') center/cover no-repeat;
-            /* ---------------------------------------------- */
-        }
-
-        .hero-text h1 {
-            font-family: 'Press Start 2P', cursive;
-            color: var(--main-pink); font-size: 38px; margin-bottom: 20px;
-        }
-
-        .motto { font-style: italic; color: var(--text-gray); margin-top: 25px; border-left: 3px solid var(--main-pink); padding-left: 15px; }
-
-        /* --- 通用标题 --- */
-        .section-title {
-            font-family: 'Press Start 2P', cursive; text-align: center;
-            margin: 100px 0 50px; color: var(--main-pink); font-size: 24px;
-        }
-
-        /* --- 实习/教育经历 (卡片模式) --- */
-        .card-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; padding: 0 10%; }
-
-        .exp-card {
-            background: #151515; padding: 30px; border: 1px solid #333;
-            transition: 0.3s; position: relative;
-        }
-
-        .exp-card:hover { border-color: var(--main-pink); transform: translateY(-5px); box-shadow: 0 5px 15px rgba(255, 0, 127, 0.2); }
-
-        /* --- 视觉成果 (项目网格) --- */
-        .project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 0 10%; }
-
-        .proj-item {
-            aspect-ratio: 1/1; border: 4px solid #333; cursor: pointer;
-            position: relative; overflow: hidden; background: #222;
-            border-radius: 12px;
-            transition: 0.3s;
-        }
-
-        .proj-item:hover {
-            border-color: var(--main-pink);
-            box-shadow: 0 0 20px rgba(255, 0, 127, 0.6);
-        }
-
-        .proj-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-
-        .proj-item:not(.esg-proj):not(.design-proj):not(.loreal-proj):hover img { transform: scale(1.1); filter: brightness(0.4); }
-
-        .proj-label {
-            position: absolute; bottom: 15px; left: 15px; 
-            font-family: 'Press Start 2P'; font-size: 12px; pointer-events: none;
-        }
-
-        /* --- 工作照 (剪贴板风格) --- */
-        .scrapbook { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; padding: 60px 10%; }
-
-        .work-photo {
-            width: 240px; padding: 12px 12px 40px 12px; background: #eeeeee; color: #000;
-            transform: rotate(-3deg); transition: 0.3s; cursor: pointer;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
-        }
-
-        .work-photo:nth-child(even) { transform: rotate(3deg); }
-
-        .work-photo:hover { transform: rotate(0deg) scale(1.1); z-index: 10; }
-
-        .work-photo img { 
-            width: 100%; height: 180px; 
-            object-fit: cover; /* 修复后的正确属性 */
-        }
-
-        .work-photo p { font-size: 9px; font-family: 'Press Start 2P'; margin-top: 15px; text-align: center; }
-
-        /* --- 弹窗 Modal --- */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.95);
-            z-index: 2000; padding: 50px; overflow-y: auto;
-        }
-
-        .modal-content { max-width: 1100px; margin: 0 auto; }
-
-        .modal-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-            gap: 20px; margin-top: 40px; 
-        }
-
-        .modal-grid img { width: 100%; border: 1px solid #444; object-fit: contain; }
-
-        .close-btn { color: var(--main-pink); font-family: 'Press Start 2P'; cursor: pointer; float: right; font-size: 14px; }
-
-        /* --- 页脚 --- */
-        footer { padding: 80px 50px; text-align: center; border-top: 1px solid #333; margin-top: 100px; }
-        .pixel-btn {
-            display: inline-block; padding: 18px 30px;
-            border: var(--pixel-border); color: white;
-            text-decoration: none; font-family: 'Press Start 2P', cursive;
-            font-size: 12px; margin: 15px; transition: 0.2s;
-        }
-        .pixel-btn:hover { background: var(--main-pink); transform: translate(-2px, -2px); box-shadow: 4px 4px 0px white; }
-
-        /* --- ESG 项目特殊样式 --- */
-        .esg-proj {
-            border: 4px solid var(--main-pink) !important;
-            background: #000;
-        }
-
-        .esg-proj .proj-icon {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-        }
-
-        .esg-proj .proj-icon::before {
-            content: '🏆';
-            font-size: 70px;
-            line-height: 1;
-        }
-
-        /* --- VISUAL DESIGN 项目样式 --- */
-        .design-proj {
-            border: 4px solid var(--main-pink) !important;
-            background: #000;
-        }
-
-        .design-proj .proj-icon {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-        }
-
-        .design-proj .proj-icon::before {
-            content: '🎀';
-            font-size: 60px;
-            line-height: 1;
-        }
-
-        /* --- LOREAL 项目样式 --- */
-        .loreal-proj {
-            border: 4px solid var(--main-pink) !important;
-            background: #000;
-        }
-
-        .loreal-proj .proj-icon {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #000;
-            position: relative;
-        }
-
-        .loreal-proj .proj-icon::before {
-            content: '💎';
-            font-size: 65px;
-            line-height: 1;
-        }
-
-        .loreal-proj .proj-icon::after {
-            display: none;
-        }
-
-        /* --- 响应式设计 (手机/平板适配) --- */
-        @media (max-width: 1024px) {
-            #home {
-                padding: 120px 5%;
-                gap: 30px;
-            }
-
-            .hero-text h1 {
-                font-size: 28px;
-            }
-
-            .section-title {
-                font-size: 20px;
-                margin: 60px 0 40px;
-            }
-
-            .card-container {
-                padding: 0 5%;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            }
-
-            .project-grid {
-                padding: 0 5%;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            }
-
-            .scrapbook {
-                padding: 40px 5%;
-                gap: 25px;
-            }
-
-            .work-photo {
-                width: 200px;
-            }
-
-            nav {
-                padding: 15px 20px;
-            }
-
-            .nav-links a {
-                margin-left: 15px;
-                font-size: 12px;
-            }
-
-            #lang-switch {
-                top: 60px;
-                right: 10px;
-                padding: 8px 12px;
-                font-size: 8px;
-            }
-
-            footer {
-                padding: 60px 20px;
-            }
-
-            .pixel-btn {
-                padding: 15px 20px;
-                font-size: 10px;
-                margin: 10px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            /* 手机屏幕 */
-            #home {
-                flex-direction: column;
-                height: auto;
-                padding: 140px 5% 50px;
-                gap: 30px;
-            }
-
-            .hero-img {
-                width: 280px;
-                height: 340px;
-                border-width: 3px;
-            }
-
-            .hero-text {
-                text-align: center;
-            }
-
-            .hero-text h1 {
-                font-size: 24px;
-            }
-
-            .hero-text p {
-                font-size: 14px;
-            }
-
-            .motto {
-                margin-top: 20px;
-                padding-left: 0;
-                border-left: none;
-                border-top: 3px solid var(--main-pink);
-                padding-top: 15px;
-            }
-
-            .section-title {
-                font-size: 18px;
-                margin: 50px 0 30px;
-            }
-
-            .card-container {
-                padding: 0 5%;
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .exp-card {
-                padding: 20px;
-            }
-
-            .project-grid {
-                padding: 0 5%;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-
-            .proj-item {
-                aspect-ratio: auto;
-                min-height: 180px;
-            }
-
-            .proj-label {
-                font-size: 10px;
-            }
-
-            .scrapbook {
-                flex-direction: column;
-                align-items: center;
-                padding: 30px 5%;
-                gap: 20px;
-            }
-
-            .work-photo {
-                width: 220px;
-                margin: 0;
-                transform: rotate(0deg);
-            }
-
-            .work-photo:nth-child(even) {
-                transform: rotate(0deg);
-            }
-
-            nav {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                padding: 12px 15px;
-                gap: 0;
-            }
-
-            .nav-logo {
-                font-family: 'Press Start 2P'; 
-                color: var(--main-pink); 
-                font-size: 14px;
-            }
-
-            .menu-toggle {
-                display: block;
-            }
-
-            .nav-links {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(10, 10, 10, 0.98);
-                border-bottom: 1px solid #333;
-                flex-direction: column;
-                gap: 12px;
-                padding: 15px;
-                max-height: 0;
-                overflow: hidden;
-                transition: max-height 0.3s ease;
-            }
-
-            .nav-links.active {
-                max-height: 300px;
-            }
-
-            .nav-links a {
-                margin-left: 0;
-                font-size: 11px;
-                padding: 8px 0;
-                border-bottom: 1px solid #333;
-            }
-
-            .nav-links a:last-child {
-                border-bottom: none;
-            }
-
-            #lang-switch {
-                position: fixed;
-                top: 50px;
-                right: 15px;
-                padding: 8px 10px;
-                font-size: 8px;
-                box-shadow: 3px 3px 0px #55002b;
-            }
-
-            footer {
-                padding: 40px 15px;
-            }
-
-            .pixel-btn {
-                display: block;
-                padding: 12px 20px;
-                font-size: 10px;
-                margin: 8px auto;
-                width: 90%;
-                max-width: 300px;
-            }
-
-            .pixel-btn:hover {
-                box-shadow: 3px 3px 0px white;
-            }
-
-            .modal {
-                padding: 30px 15px;
-            }
-
-            .modal-content {
-                max-width: 100%;
-            }
-
-            .modal-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .close-btn {
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            /* 小型手机屏幕 */
-            #home {
-                padding: 100px 5% 40px;
-            }
-
-            .hero-img {
-                width: 240px;
-                height: 300px;
-                border-width: 2px;
-            }
-
-            .hero-text h1 {
-                font-size: 20px;
-                margin-bottom: 15px;
-            }
-
-            .hero-text p {
-                font-size: 13px;
-            }
-
-            .section-title {
-                font-size: 16px;
-                margin: 40px 0 25px;
-            }
-
-            .card-container {
-                padding: 0 5%;
-            }
-
-            .exp-card {
-                padding: 15px;
-            }
-
-            .exp-card h3 {
-                font-size: 14px;
-            }
-
-            .exp-card p {
-                font-size: 13px;
-            }
-
-            .project-grid {
-                padding: 0 5%;
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .proj-item {
-                min-height: 200px;
-            }
-
-            .proj-label {
-                font-size: 9px;
-                bottom: 10px;
-                left: 10px;
-            }
-
-            .proj-item .proj-icon::before {
-                font-size: 50px;
-            }
-
-            .design-proj .proj-icon::before {
-                font-size: 45px;
-            }
-
-            .loreal-proj .proj-icon::before {
-                font-size: 50px;
-            }
-
-            .scrapbook {
-                padding: 20px 5%;
-            }
-
-            .work-photo {
-                width: 180px;
-                padding: 10px 10px 30px;
-            }
-
-            .work-photo img {
-                height: 140px;
-            }
-
-            .work-photo p {
-                font-size: 8px;
-                margin-top: 10px;
-            }
-
-            nav {
-                padding: 10px 12px;
-            }
-
-            .nav-logo {
-                font-size: 12px;
-            }
-
-            .menu-toggle {
-                font-size: 20px;
-            }
-
-            .nav-links a {
-                font-size: 9px;
-            }
-
-            #lang-switch {
-                padding: 6px 8px;
-                font-size: 7px;
-                top: 45px;
-                right: 10px;
-            }
-
-            footer {
-                padding: 30px 10px;
-                margin-top: 50px;
-            }
-
-            .pixel-btn {
-                padding: 10px 15px;
-                font-size: 9px;
-                margin: 5px auto;
-            }
-
-            .modal {
-                padding: 20px 10px;
-            }
-
-            .close-btn {
-                font-size: 11px;
-            }
-
-            .modal-content h2 {
-                font-size: 18px;
-            }
-
-            #modalDesc {
-                font-size: 13px;
-            }
-        }
-
-    </style>
+    <meta name="theme-color" content="#07070b">
+    <title>Annie Chen | Digital Identity</title>
+    <meta name="description" content="Annie Chen's immersive digital identity portfolio.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
+    <div class="loader" id="loader" aria-hidden="true">
+        <div class="loader__orb"></div>
+        <div class="loader__text">ANNIE.CHEN</div>
+        <div class="loader__bar"><span></span></div>
+    </div>
 
-    <button id="lang-switch" onclick="toggleLang()">EN / 中</button>
+    <div class="cursor" id="cursor" aria-hidden="true"></div>
+    <div class="cursor cursor--glow" id="cursorGlow" aria-hidden="true"></div>
 
-    <nav>
-        <div class="nav-logo">ANNIE.CHEN</div>
-        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+    <button id="lang-switch" class="magnetic" type="button">EN / 中</button>
+
+    <nav class="site-nav glass-panel" aria-label="Primary navigation">
+        <a class="nav-logo magnetic" href="#home" aria-label="Annie Chen home">ANNIE.CHEN</a>
+        <button class="menu-toggle magnetic" type="button" aria-label="Open menu" aria-expanded="false">
+            <span></span>
+            <span></span>
+        </button>
         <div class="nav-links" id="navLinks">
-            <a href="#home" data-key="nav-home">主页</a>
-            <a href="#experience" data-key="nav-exp">经历</a>
-            <a href="#projects" data-key="nav-proj">作品</a>
-            <a href="#contact" data-key="nav-contact">联系</a>
+            <a class="magnetic" href="#home" data-key="nav-home">主页</a>
+            <a class="magnetic" href="#experience" data-key="nav-exp">经历</a>
+            <a class="magnetic" href="#projects" data-key="nav-proj">作品</a>
+            <a class="magnetic" href="#work" data-key="nav-work">记录</a>
+            <a class="magnetic" href="#contact" data-key="nav-contact">联系</a>
         </div>
     </nav>
 
-    <section id="home">
-        <div class="hero-img"></div> <div class="hero-text">
-            <h1 id="hero-name">ANNIE CHEN</h1>
-            <p id="hero-desc" style="max-width: 550px; font-size: 16px; color: var(--text-gray);">
-                中山大学经济学本科生，具备卓越的商业分析能力与跨学科技术实践背景。雅思 7.5，熟练掌握 Python 与前端开发。
-            </p>
-            <p class="motto">I never throw away my shot.</p>
+    <main>
+        <section id="home" class="hero section-shell" data-section>
+            <div class="hero__ambient" aria-hidden="true">
+                <div class="hero__gradient"></div>
+                <div class="hero__grid"></div>
+                <div class="hero__noise"></div>
+                <div class="hero__particles">
+                    <span></span><span></span><span></span><span></span><span></span><span></span>
+                    <span></span><span></span><span></span><span></span><span></span><span></span>
+                </div>
+                <div class="hero__light hero__light--one"></div>
+                <div class="hero__light hero__light--two"></div>
+            </div>
+
+            <div class="hero__content">
+                <div class="hero__copy">
+                    <p class="eyebrow reveal-text">DIGITAL IDENTITY / PORTFOLIO</p>
+                    <h1 id="hero-name" class="hero__title" aria-label="ANNIE CHEN">
+                        <span>A</span><span>N</span><span>N</span><span>I</span><span>E</span>
+                        <span>C</span><span>H</span><span>E</span><span>N</span>
+                    </h1>
+                    <p id="hero-desc" class="hero__desc">
+                        中山大学经济学本科生，具备出色的商业分析能力与跨学科技术实践背景。雅思 7.5，熟练掌握 Python 与前端开发。
+                    </p>
+                    <p class="motto" data-motto="I never throw away my shot."><span></span></p>
+                    <div class="hero__actions">
+                        <a class="btn btn--primary magnetic" href="#projects" data-key="hero-cta">探索作品</a>
+                        <a class="btn btn--ghost magnetic" href="mailto:chenxy2267@mail2.sysu.edu.cn" data-key="hero-mail">联系我</a>
+                    </div>
+                </div>
+
+                <div class="hero__portrait-wrap" data-parallax-depth="34">
+                    <div class="hero__portrait-glow"></div>
+                    <div class="hero-img magnetic" role="img" aria-label="Annie Chen portrait"></div>
+                    <div class="hero__status glass-panel">
+                        <span class="status-dot"></span>
+                        <span data-key="hero-status">OPEN TO CREATIVE STRATEGY</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="scroll-cue" aria-hidden="true">
+                <span></span>
+                <small>SCROLL</small>
+            </div>
+        </section>
+
+        <section id="experience" class="section-shell content-section" data-section>
+            <div class="section-heading">
+                <p class="eyebrow">01 / PROFILE SIGNALS</p>
+                <h2 class="section-title" data-key="title-exp">实践经历</h2>
+            </div>
+            <div class="card-container">
+                <article class="exp-card glass-card">
+                    <span class="card-index">01</span>
+                    <h3>国信证券 | Guosen Securities</h3>
+                    <p class="meta">2025.01 - 2025.03 | <span data-key="pos-intern">实习生</span></p>
+                    <p data-key="exp-gs">参与公司晨会，汇报行业动态与政策信息。协助客户开户与投资者教育，参与银行拜访。</p>
+                </article>
+                <article class="exp-card glass-card">
+                    <span class="card-index">02</span>
+                    <h3>统战部 | UFWD</h3>
+                    <p class="meta">2025.02 - 2025.03 | <span data-key="pos-staff">干事</span></p>
+                    <p data-key="exp-uf">撰写致商会新春贺信，获科室采纳。参与宗教场所安全排查与文件归档。</p>
+                </article>
+                <article class="exp-card glass-card">
+                    <span class="card-index">03</span>
+                    <h3>中山大学团委学术部 | SYSU Youth League</h3>
+                    <p class="meta">2024.09 - 至今 | <span data-key="pos-vice-director">副委员</span></p>
+                    <p data-key="exp-sysu-league">负责学术交流活动的策划与组织，参与校级学术竞赛等项目的执行与推广。</p>
+                </article>
+                <article class="exp-card glass-card">
+                    <span class="card-index">04</span>
+                    <h3>英语辩论队 & 外语协会 | Debate & Language Club</h3>
+                    <p class="meta">2024.09 - 至今 | <span data-key="pos-member">成员</span></p>
+                    <p data-key="exp-debate">参与校内外英语辩论赛事，提升语言表达与逻辑思维能力。积极参加外语文化交流活动。</p>
+                </article>
+            </div>
+        </section>
+
+        <section id="projects" class="section-shell content-section project-section" data-section>
+            <div class="section-heading">
+                <p class="eyebrow">02 / CASE STUDIES</p>
+                <h2 class="section-title" data-key="title-proj">视觉成果集</h2>
+            </div>
+            <div class="project-grid">
+                <article class="proj-item glass-card magnetic" data-project="esg" tabindex="0" role="button">
+                    <div class="project-orb">ESG</div>
+                    <div class="project-card-copy">
+                        <span data-key="proj-esg">ESG 应用</span>
+                        <p data-key="proj-esg-sub">产品原型 / 商业逻辑 / 用户体验</p>
+                    </div>
+                </article>
+                <article class="proj-item glass-card magnetic" data-project="design" tabindex="0" role="button">
+                    <div class="project-orb">VD</div>
+                    <div class="project-card-copy">
+                        <span data-key="proj-design">视觉设计</span>
+                        <p data-key="proj-design-sub">校园传播 / 海报系统 / 内容统筹</p>
+                    </div>
+                </article>
+                <article class="proj-item glass-card magnetic" data-project="loreal" tabindex="0" role="button">
+                    <div class="project-orb">LB</div>
+                    <div class="project-card-copy">
+                        <span data-key="proj-loreal">欧莱雅设计</span>
+                        <p data-key="proj-loreal-sub">Brandstorm / 前端 UI / 定价策略</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section id="work" class="section-shell content-section" data-section>
+            <div class="section-heading">
+                <p class="eyebrow">03 / FIELD NOTES</p>
+                <h2 class="section-title" data-key="title-work">工作记录</h2>
+            </div>
+            <div class="scrapbook">
+                <figure class="work-photo">
+                    <img src="images/debate.png" alt="Debate event">
+                    <figcaption>@SYSDC_DEBATE</figcaption>
+                </figure>
+                <figure class="work-photo">
+                    <img src="images/UN.jpg" alt="United Nations fair">
+                    <figcaption>@UN_FAIR</figcaption>
+                </figure>
+                <figure class="work-photo">
+                    <img src="images/duck.PNG" alt="Office daily">
+                    <figcaption>@OFFICE_DAILY</figcaption>
+                </figure>
+                <figure class="work-photo">
+                    <img src="images/edt.jpg" alt="EDT activity">
+                    <figcaption>@EDT</figcaption>
+                </figure>
+            </div>
+        </section>
+    </main>
+
+    <footer id="contact" class="section-shell site-footer" data-section>
+        <div class="footer-glow" aria-hidden="true"></div>
+        <p class="eyebrow">04 / CONNECT</p>
+        <h2 class="section-title" data-key="title-contact">与我联系</h2>
+        <div class="footer-actions">
+            <a href="mailto:chenxy2267@mail2.sysu.edu.cn" class="btn btn--primary magnetic">EMAIL</a>
+            <a href="tel:13063036522" class="btn btn--ghost magnetic">CALL</a>
+            <a href="https://www.linkedin.com/in/%E8%8A%AF%E7%BE%BD-%E9%99%88-5a377a3b3/" target="_blank" rel="noopener noreferrer" class="btn btn--ghost magnetic">LINKEDIN</a>
         </div>
-    </section>
-
-    <section id="experience">
-        <h2 class="section-title" data-key="title-exp">EXPERIENCE</h2>
-        <div class="card-container">
-            <div class="exp-card">
-                <h3 style="color:var(--main-pink); margin-bottom: 10px;">国信证券 | Guosen Securities</h3>
-                <p style="font-size: 13px; color: #888; margin-bottom: 15px;">2026.01 - 2025.03 | <span data-key="pos-intern">实习生</span></p>
-                <p data-key="exp-gs" style="font-size: 14px;">参与公司晨会，汇报行业动态与政策信息。协助客户开户与投资者教育，参与银行拜访。</p>
-            </div>
-            <div class="exp-card">
-                <h3 style="color:var(--main-pink); margin-bottom: 10px;">统战部 | UFWD</h3>
-                <p style="font-size: 13px; color: #888; margin-bottom: 15px;">2025.02 - 2025.03 | <span data-key="pos-staff">干事</span></p>
-                <p data-key="exp-uf" style="font-size: 14px;">独立撰写致商会新春贺信，获科室采纳。参与宗教场所安全排查与文件归档。</p>
-            </div>
-            <div class="exp-card">
-                <h3 style="color:var(--main-pink); margin-bottom: 10px;">中山大学团委学术部 | SYSU Youth League</h3>
-                <p style="font-size: 13px; color: #888; margin-bottom: 15px;">2024.09 - 至今 | <span data-key="pos-vice-director">副委员</span></p>
-                <p data-key="exp-sysu-league" style="font-size: 14px;">负责学术交流活动的策划与组织，参与校级学术竞赛等项目的执行与推广。</p>
-            </div>
-            <div class="exp-card">
-                <h3 style="color:var(--main-pink); margin-bottom: 10px;">英语辩论队 & 外语协会 | Debate & Language Club</h3>
-                <p style="font-size: 13px; color: #888; margin-bottom: 15px;">2024.09 - 至今 | <span data-key="pos-member">成员</span></p>
-                <p data-key="exp-debate" style="font-size: 14px;">参与校内外英语辩论赛事，提升语言表达与逻辑思维能力。积极参加外语文化交流活动。</p>
-            </div>
-        </div>
-    </section>
-
-    <section id="projects">
-        <h2 class="section-title" data-key="title-proj">VISUAL PORTFOLIO</h2>
-        <div class="project-grid">
-            
-            <div class="proj-item esg-proj" onclick="openModal('esg')">
-                <div class="proj-icon"></div>
-                <div class="proj-label" data-key="proj-esg">ESG APP</div>
-            </div>
-
-            <div class="proj-item design-proj" onclick="openModal('design')">
-                <div class="proj-icon"></div>
-                <div class="proj-label" data-key="proj-design">VISUAL DESIGN</div>
-            </div>
-                        <div class="proj-item loreal-proj" onclick="openModal('loreal')">
-                <div class="proj-icon"></div>
-                <div class="proj-label" data-key="proj-loreal">FORE-FRONT DESIGN</div>
-            </div>
-
-        </div>
-    </section>
-
-    <section id="work">
-        <h2 class="section-title" data-key="title-work">WORK LOG</h2>
-        <div class="scrapbook">
-            
-            <div class="work-photo">
-                <img src="images/debate.png" alt="Photo 1">
-                <p>@SYSDC_DEBATE</p>
-            </div>
-
-            <div class="work-photo">
-                <img src="images/UN.jpg" alt="Photo 2">
-                <p>@UN_FAIR</p>
-            </div>
-                        <div class="work-photo">
-                <img src="images/duck.PNG" alt="Photo 3">
-                <p>@OFFICE_DAILY</p>
-            </div>
-                        <div class="work-photo">
-                <img src="images/edt.jpg" alt="Photo 2">
-                <p>@EDT</p>
-            </div>
-
-        </div>
-    </section>
-
-    <footer id="contact">
-        <h2 class="section-title" data-key="title-contact">CONNECT</h2>
-        <a href="mailto:chenxy2267@mail2.sysu.edu.cn" class="pixel-btn">EMAIL</a>
-        <a href="tel:13063036522" class="pixel-btn">CALL</a>
-        <a href="https://www.linkedin.com/in/%E8%8A%AF%E7%BE%BD-%E9%99%88-5a377a3b3/" target="_blank" class="pixel-btn">LINKEDIN</a>
     </footer>
 
-    <div id="projectModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn" onclick="closeModal()">[CLOSE]</span>
-            <h2 id="modalTitle" style="font-family:'Press Start 2P'; color:var(--main-pink)">TITLE</h2>
-            <p id="modalDesc" style="margin: 25px 0; color: #bbb;"></p>
-            <div id="modalButtons" style="margin: 20px 0;"></div>
-            <div id="modalGallery" class="modal-grid">
-                </div>
+    <aside id="projectViewer" class="project-viewer" aria-hidden="true" aria-modal="true" role="dialog">
+        <div class="viewer-backdrop" data-close-viewer></div>
+        <div class="viewer-panel">
+            <button class="viewer-close magnetic" type="button" data-close-viewer aria-label="Close project viewer">CLOSE</button>
+            <div class="viewer-meta">
+                <p class="eyebrow" id="viewerKicker">CASE STUDY</p>
+                <h2 id="viewerTitle">TITLE</h2>
+                <p id="viewerDesc"></p>
+                <div class="viewer-tags" id="viewerTags"></div>
+                <div class="viewer-timeline" id="viewerTimeline"></div>
+                <div id="viewerButtons" class="viewer-buttons"></div>
+            </div>
+            <div class="viewer-gallery" id="viewerGallery"></div>
         </div>
-    </div>
+    </aside>
 
-    <script>
-        /* --- 汉堡菜单切换函数 --- */
-        function toggleMenu() {
-            const navLinks = document.getElementById('navLinks');
-            navLinks.classList.toggle('active');
-        }
-
-        // 点击导航链接时关闭菜单
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.nav-links a');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function() {
-                    document.getElementById('navLinks').classList.remove('active');
-                });
-            });
-        });
-
-        /* --- 语言数据包 --- */
-        const translations = {
-            'zh': {
-                'nav-home': '主页', 'nav-exp': '经历', 'nav-proj': '作品', 'nav-contact': '联系',
-                'title-exp': '实践经历', 'title-proj': '视觉成果集', 'title-work': '工作记录', 'title-contact': '与我联络',
-                'hero-desc': '中山大学经济学本科生，具备卓越的商业分析能力与跨学科技术实践背景。雅思 7.5，熟练掌握 Python 与前端开发。',
-                'exp-gs': '参与公司晨会，汇报行业动态与政策信息。协助客户开户与投资者教育，参与银行拜访。',
-                'exp-uf': '撰写致商会新春贺信，获科室采纳。参与宗教场所安全排查与文件归档。',
-                'exp-sysu-league': '负责学术交流活动的策划与组织，参与校级学术竞赛等项目的执行与推广。',
-                'exp-debate': '参与校内外英语辩论赛事，提升语言表达与逻辑思维能力。积极参加外语文化交流活动。',
-                'proj-esg': 'ESG 应用', 'proj-design': '视觉设计', 'proj-loreal': '欧莱雅设计',
-                'pos-intern': '实习生', 'pos-staff': '干事', 'pos-vice-director': '副委员', 'pos-member': '成员',
-                'esg-desc': '主导 UI 原型设计与产品功能策划，融合商业逻辑与用户体验。',
-                'design-desc': '校级比赛海报制作与推文全流程统筹。',
-                'loreal-desc': '欧莱雅"Brandstorm"商赛前端UI与海报设计，生产和定价。',
-                'view-project': '查看项目'
-            },
-            'en': {
-                'nav-home': 'HOME', 'nav-exp': 'EXPERIENCE', 'nav-proj': 'PROJECTS', 'nav-contact': 'CONTACT',
-                'title-exp': 'EXPERIENCE', 'title-proj': 'VISUAL PORTFOLIO', 'title-work': 'WORK LOG', 'title-contact': 'CONNECT',
-                'hero-desc': 'Economics undergrad at Sun Yat-sen University. Expert in business analysis with a tech edge. IELTS 7.5, proficient in Python & Front-end.',
-                'exp-gs': 'Participated in morning meetings, reported on industry trends. Assisted in client account opening and investor education.',
-                'exp-uf': 'Drafted official letters for chambers of commerce. Conducted safety inspections and document management.',
-                'exp-sysu-league': 'Responsible for planning and organizing academic exchange activities and promoting campus-level academic competitions.',
-                'exp-debate': 'Participated in English debate competitions inside and outside campus, enhancing language expressions and critical thinking. Actively engaged in foreign language and cultural exchange activities.',
-                'proj-esg': 'ESG APP', 'proj-design': 'VISUAL DESIGN', 'proj-loreal': 'FORE-FRONT DESIGN',
-                'pos-intern': 'Intern', 'pos-staff': 'Staff', 'pos-vice-director': 'Vice Director', 'pos-member': 'Member',
-                'esg-desc': 'Led UI prototyping and product planning.',
-                'design-desc': 'Coordination of campus event posters and social media content.',
-                'loreal-desc': 'Loreal "Brandstorm" front-end UI and poster design, production and pricing.',
-                'view-project': 'View Project'
-            }
-        };
-
-        let currentLang = 'zh';
-        function toggleLang() {
-            currentLang = currentLang === 'zh' ? 'en' : 'zh';
-            document.querySelectorAll('[data-key]').forEach(el => {
-                const key = el.getAttribute('data-key');
-                if (translations[currentLang][key]) {
-                    el.innerText = translations[currentLang][key];
-                }
-            });
-            document.getElementById('hero-desc').innerText = translations[currentLang]['hero-desc'];
-            document.getElementById('lang-switch').innerText = currentLang === 'zh' ? 'EN / 中' : 'ZH / EN';
-            // 更新弹窗内容（如果打开）
-            if (document.getElementById('projectModal').style.display === 'block') {
-                const desc = document.getElementById('modalDesc');
-                const key = desc.getAttribute('data-desc-key');
-                if (key) {
-                    desc.innerText = translations[currentLang][key];
-                }
-                // 更新按钮文本
-                const btn = document.querySelector('#modalButtons .pixel-btn');
-                if (btn) {
-                    btn.innerText = translations[currentLang]['view-project'];
-                }
-            }
-        }
-
-        /* --- 弹窗数据管理 (📸 这里修改弹窗内的多张图片) --- */
-        const projectData = {
-            'esg': {
-                title: 'ESG APP DESIGN',
-                descKey: 'esg-desc',
-                images: ['images/cd1.png', 'images/cd2.png', 'images/cd3.png','images/cd4.png','images/cd5.png','images/cd6.png','images/cd7.png','images/cd8.png']
-            },
-            'design': {
-                title: 'VISUAL DESIGN',
-                descKey: 'design-desc',
-                images: ['images/1.png', 'images/笃行致远.png','images/第一届.png']
-            },
-            'loreal': {
-                title: 'Loreal',
-                descKey: 'loreal-desc',
-                images: ['images/loreal.jpg','images/lr1.png','images/lr2.png','images/lr3.png','images/lr4.png','images/lr5.png','images/lr6.png'],
-                url: 'https://annie-025.github.io/City_scent/'
-            }
-            
-        };
-
-        function openModal(id) {
-            const data = projectData[id];
-            document.getElementById('modalTitle').innerText = data.title;
-            const desc = document.getElementById('modalDesc');
-            desc.innerText = translations[currentLang][data.descKey];
-            desc.setAttribute('data-desc-key', data.descKey);
-            const buttonsContainer = document.getElementById('modalButtons');
-            if (data.url) {
-                buttonsContainer.innerHTML = `<a href="${data.url}" target="_blank" class="pixel-btn">${translations[currentLang]['view-project']}</a>`;
-            } else {
-                buttonsContainer.innerHTML = '';
-            }
-            const gallery = document.getElementById('modalGallery');
-            // 自动根据图片数组生成 HTML
-            gallery.innerHTML = data.images.map(img => `<img src="${img}">`).join('');
-            document.getElementById('projectModal').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // 禁止背景滚动
-        }
-
-        function closeModal() {
-            document.getElementById('projectModal').style.display = 'none';
-            document.body.style.overflow = 'auto'; // 恢复滚动
-        }
-
-        // 点击背景关闭弹窗
-        window.onclick = function(event) {
-            const modal = document.getElementById('projectModal');
-            if (event.target == modal) closeModal();
-        }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/animations.js"></script>
 </body>
 </html>
