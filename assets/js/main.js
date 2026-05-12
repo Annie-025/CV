@@ -135,6 +135,22 @@ function scrollToTarget(selector) {
     const target = qs(selector);
     if (!target) return;
     target.scrollIntoView({ behavior: "smooth", block: "start" });
+    target.classList.add("case-section--highlight");
+    window.setTimeout(() => target.classList.remove("case-section--highlight"), 900);
+}
+
+function bindProjectCards() {
+    qsa("[data-target]").forEach((card) => {
+        const go = () => scrollToTarget(card.dataset.target);
+
+        card.addEventListener("click", go);
+        card.addEventListener("keydown", (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                go();
+            }
+        });
+    });
 }
 
 function bindInteractions() {
@@ -144,16 +160,7 @@ function bindInteractions() {
 
     qs(".menu-toggle").addEventListener("click", () => toggleMenu());
 
-    qsa("[data-target]").forEach((card) => {
-        const openCase = () => scrollToTarget(card.dataset.target);
-        card.addEventListener("click", openCase);
-        card.addEventListener("keydown", (event) => {
-            if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                openCase();
-            }
-        });
-    });
+    bindProjectCards();
 
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {

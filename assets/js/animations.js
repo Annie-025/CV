@@ -22,22 +22,25 @@ function initHeroMotion() {
         return;
     }
 
-    const titleLetters = gsap.utils.toArray(".hero__title span");
+    const titleLines = gsap.utils.toArray(".hero__name-line");
 
     gsap.set([".reveal-text", ".hero__desc", ".motto", ".hero__actions", ".hero__portrait-motion"], {
         y: 26,
         opacity: 0
     });
-    gsap.set(titleLetters, { yPercent: 110, opacity: 0, rotateX: -42 });
+    gsap.set([".hero__name-line", ".hero__cn-name"], {
+        y: 36,
+        opacity: 0
+    });
 
     const tl = gsap.timeline({ defaults: { ease: "power3.out" }, delay: 0.28 });
-    tl.to(titleLetters, {
-        yPercent: 0,
+    tl.to(titleLines, {
+        y: 0,
         opacity: 1,
-        rotateX: 0,
-        stagger: 0.045,
-        duration: 1.12
+        stagger: 0.08,
+        duration: 0.9
     })
+        .to(".hero__cn-name", { y: 0, opacity: 1, duration: 0.72 }, "-=0.48")
         .to(".reveal-text", { y: 0, opacity: 1, duration: 0.75 }, 0.12)
         .to(".hero__portrait-motion", { y: 0, opacity: 1, duration: 1.2 }, 0.3)
         .to([".hero__desc", ".motto", ".hero__actions"], {
