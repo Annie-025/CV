@@ -41,37 +41,31 @@
                 <div class="hero__gradient"></div>
                 <div class="hero__grid"></div>
                 <div class="hero__noise"></div>
-                <div class="hero__particles">
-                    <span></span><span></span><span></span><span></span><span></span><span></span>
-                    <span></span><span></span><span></span><span></span><span></span><span></span>
-                </div>
                 <div class="hero__light hero__light--one"></div>
                 <div class="hero__light hero__light--two"></div>
+                <div class="hero__coord hero__coord--one">SYSU / 23.10N 113.18E</div>
+                <div class="hero__coord hero__coord--two">IDENTITY ARCHIVE / 2026</div>
             </div>
 
-            <div class="hero__content">
-                <div class="hero__copy">
-                    <p class="eyebrow reveal-text">DIGITAL IDENTITY / PORTFOLIO</p>
-                    <h1 id="hero-name" class="hero__title" aria-label="ANNIE CHEN 陈芯羽">
-                        <span class="hero__name-line">ANNIE</span>
-                        <span class="hero__name-line">CHEN</span>
-                    </h1>
-                    <p class="hero__cn-name">陈芯羽</p>
-                    <p id="hero-desc" class="hero__desc">
-                        中山大学经济学本科生，具备出色的商业分析能力与跨学科技术实践背景。雅思 7.5，熟练掌握 Python 与前端开发。
-                    </p>
-                    <p class="motto" data-motto="I never throw away my shot."><span></span></p>
-                    <div class="hero__actions">
-                        <a class="btn btn--primary" href="#projects" data-key="hero-cta">探索作品</a>
-                        <a class="btn btn--ghost" href="mailto:chenxy2267@mail2.sysu.edu.cn" data-key="hero-mail">联系我</a>
-                    </div>
+            <div class="hero__identity">
+                <p class="hero__kicker reveal-text">DIGITAL IDENTITY / PORTFOLIO</p>
+                <h1 id="hero-name" class="hero__title" aria-label="ANNIE CHEN">
+                    <span class="hero__name-line">ANNIE</span>
+                    <span class="hero__name-line">CHEN</span>
+                </h1>
+                <div class="hero__meta" aria-label="Identity signals">
+                    <span>ECONOMICS</span>
+                    <span>PRODUCT THINKING</span>
+                    <span>FRONT-END PRACTICE</span>
+                    <span>BUSINESS ANALYSIS</span>
                 </div>
-
-                <div class="hero__portrait-motion">
-                    <div class="hero__portrait-wrap" data-parallax-depth="34">
-                        <div class="hero__portrait-glow"></div>
-                        <div class="hero-img" role="img" aria-label="Annie Chen portrait"></div>
-                    </div>
+                <p id="hero-desc" class="hero__desc">
+                    中山大学经济学本科生，具备商业分析能力与跨学科技术实践背景。关注产品、策略与前端表达。
+                </p>
+                <p class="motto" data-motto="I never throw away my shot."><span></span></p>
+                <div class="hero__actions">
+                    <a class="btn btn--primary" href="#projects" data-key="hero-cta">探索作品</a>
+                    <a class="btn btn--ghost" href="mailto:chenxy2267@mail2.sysu.edu.cn" data-key="hero-mail">联系我</a>
                 </div>
             </div>
 
@@ -120,7 +114,7 @@
                 <h2 class="section-title" data-key="title-proj">视觉成果集</h2>
             </div>
             <div class="project-grid">
-                <article class="proj-item glass-card" data-target="#case-esg" tabindex="0" role="button" aria-label="Open ESG case file">
+                <article class="proj-item glass-card" data-target="#case-esg" tabindex="0" role="button" aria-label="Open ESG case file" aria-controls="case-esg" aria-expanded="false">
                     <div class="project-card-header">
                         <span class="project-index">01</span>
                         <span class="project-type" data-key="proj-esg-type">CASE FILE / PRODUCT</span>
@@ -134,7 +128,7 @@
                         <span class="project-enter" data-key="open-case">OPEN CASE →</span>
                     </div>
                 </article>
-                <article class="proj-item glass-card" data-target="#case-design" tabindex="0" role="button" aria-label="Open visual design case file">
+                <article class="proj-item glass-card" data-target="#case-design" tabindex="0" role="button" aria-label="Open visual design case file" aria-controls="case-design" aria-expanded="false">
                     <div class="project-card-header">
                         <span class="project-index">02</span>
                         <span class="project-type" data-key="proj-design-type">CASE FILE / VISUAL SYSTEM</span>
@@ -148,7 +142,7 @@
                         <span class="project-enter" data-key="open-case">OPEN CASE →</span>
                     </div>
                 </article>
-                <article class="proj-item glass-card" data-target="#case-loreal" tabindex="0" role="button" aria-label="Open L'Oreal case file">
+                <article class="proj-item glass-card" data-target="#case-loreal" tabindex="0" role="button" aria-label="Open L'Oreal case file" aria-controls="case-loreal" aria-expanded="false">
                     <div class="project-card-header">
                         <span class="project-index">03</span>
                         <span class="project-type" data-key="proj-loreal-type">CASE FILE / BRAND EXPERIENCE</span>
@@ -164,7 +158,7 @@
                 </article>
             </div>
 
-            <section id="case-esg" class="case-section" data-section>
+            <section id="case-esg" class="case-section" data-section hidden>
                 <div class="case-header">
                     <p class="eyebrow">CASE FILE 01</p>
                     <h3>ESG APP DESIGN</h3>
@@ -188,7 +182,7 @@
                 </div>
             </section>
 
-            <section id="case-design" class="case-section" data-section>
+            <section id="case-design" class="case-section" data-section hidden>
                 <div class="case-header">
                     <p class="eyebrow">CASE FILE 02</p>
                     <h3>VISUAL DESIGN</h3>
@@ -207,7 +201,7 @@
                 </div>
             </section>
 
-            <section id="case-loreal" class="case-section" data-section>
+            <section id="case-loreal" class="case-section" data-section hidden>
                 <div class="case-header">
                     <p class="eyebrow">CASE FILE 03</p>
                     <h3>L'OREAL BRANDSTORM</h3>

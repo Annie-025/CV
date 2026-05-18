@@ -9,7 +9,7 @@ const translations = {
         "title-proj": "视觉成果集",
         "title-work": "工作记录",
         "title-contact": "与我联系",
-        "hero-desc": "中山大学经济学本科生，具备出色的商业分析能力与跨学科技术实践背景。雅思 7.5，熟练掌握 Python 与前端开发。",
+        "hero-desc": "中山大学经济学本科生，具备商业分析能力与跨学科技术实践背景。关注产品、策略与前端表达。",
         "hero-cta": "探索作品",
         "hero-mail": "联系我",
         "exp-gs": "参与公司晨会，汇报行业动态与政策信息。协助客户开户与投资者教育，参与银行拜访。",
@@ -55,7 +55,7 @@ const translations = {
         "title-proj": "VISUAL PORTFOLIO",
         "title-work": "WORK LOG",
         "title-contact": "CONNECT",
-        "hero-desc": "Economics undergrad at Sun Yat-sen University with a business-analysis mindset and a technical edge. IELTS 7.5, proficient in Python and front-end development.",
+        "hero-desc": "Economics undergrad at Sun Yat-sen University with a business-analysis mindset and interdisciplinary technical practice, focused on product, strategy, and front-end expression.",
         "hero-cta": "Explore Work",
         "hero-mail": "Contact",
         "exp-gs": "Participated in morning meetings, reported industry trends and policy signals. Assisted with client onboarding, investor education, and bank visits.",
@@ -97,6 +97,8 @@ let currentLang = "zh";
 
 const qs = (selector, scope = document) => scope.querySelector(selector);
 const qsa = (selector, scope = document) => [...scope.querySelectorAll(selector)];
+const caseActiveTimers = new WeakMap();
+let pendingCaseActiveTimer = null;
 
 function setLanguage(nextLang) {
     currentLang = nextLang;
@@ -134,13 +136,50 @@ function bindNavigation() {
 function scrollToTarget(selector) {
     const target = qs(selector);
     if (!target) return;
-    target.scrollIntoView({ behavior: "smooth", block: "start" });
-    target.classList.add("case-section--highlight");
-    window.setTimeout(() => target.classList.remove("case-section--highlight"), 900);
+
+    qsa(".case-section--active").forEach((section) => {
+        section.classList.remove("case-section--active");
+        const timer = caseActiveTimers.get(section);
+        if (timer) window.clearTimeout(timer);
+    });
+
+    qsa(".case-section").forEach((section) => {
+        const isTarget = section === target;
+        section.hidden = !isTarget;
+        section.classList.toggle("case-section--open", isTarget);
+        if (!isTarget) section.classList.remove("case-section--active");
+    });
+
+    qsa("[data-target]").forEach((card) => {
+        const isCurrent = card.dataset.target === selector;
+        card.setAttribute("aria-expanded", String(isCurrent));
+        card.classList.toggle("proj-item--selected", isCurrent);
+    });
+
+    if (pendingCaseActiveTimer) {
+        window.clearTimeout(pendingCaseActiveTimer);
+    }
+
+    window.requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+
+        pendingCaseActiveTimer = window.setTimeout(() => {
+            target.classList.add("case-section--active");
+            const timer = window.setTimeout(() => {
+                target.classList.remove("case-section--active");
+                caseActiveTimers.delete(target);
+            }, 1200);
+            caseActiveTimers.set(target, timer);
+            pendingCaseActiveTimer = null;
+        }, 360);
+    });
 }
 
 function bindProjectCards() {
     qsa("[data-target]").forEach((card) => {
+        const targetId = card.dataset.target?.slice(1);
+        if (targetId) card.setAttribute("aria-controls", targetId);
+
         const go = () => scrollToTarget(card.dataset.target);
 
         card.addEventListener("click", go);
@@ -153,6 +192,22 @@ function bindProjectCards() {
     });
 }
 
+function initProjectCases() {
+    const hashTarget = window.location.hash && qs(window.location.hash);
+    if (hashTarget?.classList.contains("case-section")) {
+        scrollToTarget(window.location.hash);
+    } else {
+        qsa(".case-section").forEach((section) => {
+            section.hidden = true;
+            section.classList.remove("case-section--open", "case-section--active");
+        });
+        qsa("[data-target]").forEach((card) => {
+            card.setAttribute("aria-expanded", "false");
+            card.classList.remove("proj-item--selected");
+        });
+    }
+}
+
 function bindInteractions() {
     qs("#lang-switch").addEventListener("click", () => {
         setLanguage(currentLang === "zh" ? "en" : "zh");
@@ -161,6 +216,7 @@ function bindInteractions() {
     qs(".menu-toggle").addEventListener("click", () => toggleMenu());
 
     bindProjectCards();
+    initProjectCases();
 
     document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") {
