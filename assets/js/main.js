@@ -217,9 +217,13 @@ function bindNavigation() {
     });
 }
 
-function scrollToTarget(selector) {
+function scrollToTarget(selector, triggerCard = null) {
     const target = qs(selector);
     if (!target) return;
+    const card = triggerCard || qs(`[data-target="${selector}"]`);
+    if (!card) return;
+
+    card.insertAdjacentElement("afterend", target);
 
     qsa(".case-section--active").forEach((section) => {
         section.classList.remove("case-section--active");
@@ -245,7 +249,7 @@ function scrollToTarget(selector) {
     }
 
     window.requestAnimationFrame(() => {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        target.scrollIntoView({ behavior: "smooth", block: "nearest" });
 
         pendingCaseActiveTimer = window.setTimeout(() => {
             target.classList.add("case-section--active");
@@ -264,7 +268,7 @@ function bindProjectCards() {
         const targetId = card.dataset.target?.slice(1);
         if (targetId) card.setAttribute("aria-controls", targetId);
 
-        const go = () => scrollToTarget(card.dataset.target);
+        const go = () => scrollToTarget(card.dataset.target, card);
 
         card.addEventListener("click", go);
         card.addEventListener("keydown", (event) => {
