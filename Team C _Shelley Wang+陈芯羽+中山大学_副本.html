@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>蔚来智能销售助手 · AI Agent</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #08090d;
+  --bg2: #0f1117;
+  --bg3: #161922;
+  --bg4: #1c202c;
+  --bg5: #222636;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.11);
+  --border3: rgba(255,255,255,0.18);
+  --text: #eef0f7;
+  --text2: #8b95af;
+  --text3: #4d566b;
+  --blue: #4f8ef5;
+  --blue-dim: rgba(79,142,245,0.1);
+  --blue-glow: rgba(79,142,245,0.2);
+  --green: #34d399;
+  --green-dim: rgba(52,211,153,0.1);
+  --amber: #fbbf24;
+  --amber-dim: rgba(251,191,36,0.1);
+  --red: #f87171;
+  --red-dim: rgba(248,113,113,0.1);
+  --purple: #a78bfa;
+  --purple-dim: rgba(167,139,250,0.1);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34,211,238,0.1);
+  --pink: #f472b6;
+  --pink-dim: rgba(244,114,182,0.1);
+  --font: 'Noto Sans SC', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --r: 8px;
+  --r2: 12px;
+  --r3: 16px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; font-size: 13px; }
+
+/* ── TOPBAR ── */
+.topbar {
+  height: 48px; display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; border-bottom: 1px solid var(--border);
+  background: var(--bg2); flex-shrink: 0; z-index: 10;
+}
+.logo { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; }
+.logo-gem {
+  width: 26px; height: 26px; border-radius: 7px;
+  background: linear-gradient(135deg, #3b6ef5, #7c3aed);
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+}
+.topbar-sep { width: 1px; height: 20px; background: var(--border2); }
+.topbar-nav { display: flex; gap: 2px; }
+.nav-btn {
+  padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 500;
+  color: var(--text3); cursor: pointer; transition: all 0.15s; border: none; background: none;
+  font-family: var(--font);
+}
+.nav-btn.active, .nav-btn:hover { background: var(--bg4); color: var(--text); }
+.nav-btn.active { color: var(--blue); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.pill { font-size: 11px; padding: 3px 9px; border-radius: 20px; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+.pill-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+.pill-blue { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(79,142,245,0.2); }
+.pill-amber { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(251,191,36,0.2); }
+.pill-purple { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+.topbar-time { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+.dot-live { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: glow-dot 2s ease-in-out infinite; }
+@keyframes glow-dot { 0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0.5)} 50%{box-shadow:0 0 0 5px rgba(52,211,153,0)} }
+
+/* ── VIEWS ── */
+#view-dashboard, #view-crm { display: none; flex: 1; overflow: hidden; }
+#view-dashboard.active, #view-crm.active { display: flex; }
+
+/* ── DASHBOARD ── */
+#view-dashboard {
+  flex-direction: column; overflow-y: auto; padding: 20px 24px; gap: 20px;
+  background: var(--bg);
+}
+.dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.kpi-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 16px 18px;
+  position: relative; overflow: hidden;
+}
+.kpi-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+}
+.kpi-blue::before { background: linear-gradient(90deg, var(--blue), transparent); }
+.kpi-green::before { background: linear-gradient(90deg, var(--green), transparent); }
+.kpi-amber::before { background: linear-gradient(90deg, var(--amber), transparent); }
+.kpi-purple::before { background: linear-gradient(90deg, var(--purple), transparent); }
+.kpi-red::before { background: linear-gradient(90deg, var(--red), transparent); }
+.kpi-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.kpi-value { font-size: 28px; font-weight: 700; font-family: var(--mono); color: var(--text); line-height: 1; margin-bottom: 6px; }
+.kpi-sub { font-size: 11px; color: var(--text3); display: flex; align-items: center; gap: 4px; }
+.kpi-trend-up { color: var(--green); }
+.kpi-trend-down { color: var(--red); }
+
+.dash-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.dash-wide { grid-column: span 2; }
+
+.section-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--r2); padding: 16px 18px;
+}
+.section-title {
+  font-size: 11px; font-weight: 600; color: var(--text2);
+  text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 14px;
+  display: flex; align-items: center; gap: 8px;
+}
+
+/* funnel */
+.funnel { display: flex; flex-direction: column; gap: 6px; }
+.funnel-row { display: flex; align-items: center; gap: 10px; }
+.funnel-label { font-size: 12px; color: var(--text2); width: 70px; flex-shrink: 0; text-align: right; }
+.funnel-bar-wrap { flex: 1; height: 22px; background: var(--bg4); border-radius: 4px; overflow: hidden; position: relative; }
+.funnel-bar { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; transition: width 1s ease; }
+.funnel-bar span { font-size: 11px; font-weight: 600; font-family: var(--mono); }
+.funnel-pct { font-size: 11px; color: var(--text3); font-family: var(--mono); width: 36px; text-align: right; }
+
+/* emotion dist */
+.emotion-dist { display: flex; flex-direction: column; gap: 8px; }
+.emo-row { display: flex; align-items: center; gap: 8px; }
+.emo-icon { font-size: 16px; width: 24px; }
+.emo-bar-wrap { flex: 1; height: 6px; background: var(--bg4); border-radius: 3px; }
+.emo-bar { height: 100%; border-radius: 3px; }
+.emo-count { font-size: 11px; color: var(--text3); font-family: var(--mono); width: 20px; text-align: right; }
+
+/* stage pipeline */
+.pipeline { display: flex; align-items: stretch; gap: 0; }
+.pipe-stage {
+  flex: 1; text-align: center; padding: 12px 6px;
+  background: var(--bg3); border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.15s; position: relative;
+}
+.pipe-stage:first-child { border-radius: var(--r) 0 0 var(--r); }
+.pipe-stage:last-child { border-radius: 0 var(--r) var(--r) 0; }
+.pipe-stage:not(:last-child) { border-right: none; }
+.pipe-stage:hover { background: var(--bg4); }
+.pipe-stage.highlight { background: var(--blue-dim); border-color: rgba(79,142,245,0.25); }
+.pipe-stage-count { font-size: 20px; font-weight: 700; font-family: var(--mono); color: var(--text); }
+.pipe-stage-label { font-size: 10px; color: var(--text3); margin-top: 3px; }
+.pipe-stage-bar { position: absolute; bottom: 0; left: 0; height: 2px; border-radius: 0; transition: width 0.8s; }
+
+/* alert list */
+.alert-list { display: flex; flex-direction: column; gap: 6px; }
+.alert-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: var(--r); cursor: pointer;
+  transition: all 0.15s;
+}
+.alert-item:hover { background: var(--bg3); }
+.alert-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.alert-name { font-weight: 500; margin-right: 4px; }
+.alert-msg { color: var(--text2); flex: 1; }
+.alert-time { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+.alert-act { font-size: 10px; padding: 3px 8px; border-radius: 4px; border: none; cursor: pointer; font-family: var(--font); font-weight: 500; }
+
+/* rival heatmap */
+.rival-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.rival-cell {
+  padding: 10px 8px; border-radius: var(--r); text-align: center;
+  border: 1px solid var(--border);
+}
+.rival-cell-name { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+.rival-cell-num { font-size: 18px; font-weight: 700; font-family: var(--mono); }
+
+/* ai insight strip */
+.insight-strip {
+  background: linear-gradient(135deg, rgba(79,142,245,0.08), rgba(167,139,250,0.05));
+  border: 1px solid rgba(79,142,245,0.15);
+  border-radius: var(--r2); padding: 14px 18px;
+  display: flex; align-items: flex-start; gap: 12px;
+}
+.insight-icon { font-size: 20px; flex-shrink: 0; }
+.insight-text { font-size: 13px; color: var(--text2); line-height: 1.7; flex: 1; }
+.insight-text strong { color: var(--blue); }
+.insight-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* ── CRM VIEW ── */
+#view-crm { flex-direction: row; }
+
+/* LEFT */
+.crm-left {
+  width: 260px; flex-shrink: 0; border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; background: var(--bg2);
+}
+.left-search { padding: 10px 10px 6px; }
+.search-wrap {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: var(--r); padding: 6px 10px;
+}
+.search-wrap input { background: none; border: none; outline: none; font-family: var(--font); font-size: 12px; color: var(--text); width: 100%; }
+.search-wrap input::placeholder { color: var(--text3); }
+
+.filter-pills { display: flex; gap: 4px; padding: 0 10px 8px; flex-wrap: wrap; }
+.filter-pill {
+  font-size: 10px; padding: 3px 8px; border-radius: 20px;
+  border: 1px solid var(--border); color: var(--text3); cursor: pointer;
+  background: var(--bg3); transition: all 0.12s;
+}
+.filter-pill.on { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+
+.leads-scroll { flex: 1; overflow-y: auto; }
+.lead-item {
+  padding: 10px 12px; cursor: pointer;
+  border-left: 2px solid transparent; transition: all 0.12s;
+}
+.lead-item:hover { background: var(--bg3); }
+.lead-item.active { background: var(--bg3); border-left-color: var(--blue); }
+.lead-row1 { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.lead-name { font-size: 13px; font-weight: 600; flex: 1; }
+.lead-score-badge {
+  font-size: 10px; font-family: var(--mono); font-weight: 700;
+  padding: 2px 6px; border-radius: 4px;
+}
+.lead-row2 { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; }
+.lead-model { font-size: 11px; color: var(--text2); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lead-time { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+.lead-tags-row { display: flex; gap: 4px; flex-wrap: wrap; }
+.mini-tag { font-size: 10px; padding: 1px 6px; border-radius: 3px; }
+
+/* CENTER */
+.crm-center {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg);
+}
+
+/* customer hero */
+.cust-hero {
+  padding: 16px 20px 14px; border-bottom: 1px solid var(--border);
+  background: var(--bg2); flex-shrink: 0;
+}
+.hero-top { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 12px; }
+.hero-avatar {
+  width: 48px; height: 48px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 700; border: 2px solid var(--border2);
+}
+.hero-main { flex: 1; }
+.hero-name { font-size: 17px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+.hero-contact { font-size: 11px; color: var(--text3); font-family: var(--mono); margin-bottom: 8px; }
+
+/* identity + emotion tags */
+.tag-cluster { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 10px; }
+.vtag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; padding: 3px 8px; border-radius: 20px;
+  font-weight: 500; border: 1px solid transparent;
+}
+.vtag-identity { background: rgba(34,211,238,0.1); color: var(--cyan); border-color: rgba(34,211,238,0.2); }
+.vtag-emotion-pos { background: rgba(52,211,153,0.1); color: var(--green); border-color: rgba(52,211,153,0.2); }
+.vtag-emotion-neu { background: rgba(251,191,36,0.1); color: var(--amber); border-color: rgba(251,191,36,0.2); }
+.vtag-emotion-neg { background: rgba(248,113,113,0.1); color: var(--red); border-color: rgba(248,113,113,0.2); }
+.vtag-intent { background: rgba(167,139,250,0.1); color: var(--purple); border-color: rgba(167,139,250,0.2); }
+.vtag-rival { background: rgba(248,113,113,0.1); color: var(--red); border-color: rgba(248,113,113,0.2); }
+.vtag-budget { background: rgba(251,191,36,0.1); color: var(--amber); border-color: rgba(251,191,36,0.2); }
+.vtag-channel { background: rgba(79,142,245,0.1); color: var(--blue); border-color: rgba(79,142,245,0.2); }
+.vtag-ai { background: rgba(79,142,245,0.08); color: var(--blue); border-color: rgba(79,142,245,0.15); }
+
+/* quick stats */
+.hero-stats { display: flex; gap: 0; border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+.hero-stat {
+  flex: 1; padding: 8px 10px; text-align: center;
+  border-right: 1px solid var(--border);
+}
+.hero-stat:last-child { border-right: none; }
+.hs-val { font-size: 15px; font-weight: 700; font-family: var(--mono); }
+.hs-lbl { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+/* stage bar */
+.stage-track { display: flex; gap: 0; margin-top: 12px; }
+.stage-seg {
+  flex: 1; height: 3px; background: var(--bg4);
+  transition: background 0.3s;
+}
+.stage-seg:first-child { border-radius: 2px 0 0 2px; }
+.stage-seg:last-child { border-radius: 0 2px 2px 0; }
+.stage-seg.done { background: var(--green); }
+.stage-seg.active { background: var(--blue); animation: pulse-bar 2s ease-in-out infinite; }
+@keyframes pulse-bar { 0%,100%{opacity:1} 50%{opacity:0.6} }
+.stage-labels { display: flex; margin-top: 5px; }
+.stage-lbl { flex: 1; font-size: 10px; color: var(--text3); text-align: center; }
+.stage-lbl.done { color: var(--green); }
+.stage-lbl.active { color: var(--blue); font-weight: 600; }
+
+/* action bar */
+.action-bar {
+  display: flex; gap: 6px; padding: 10px 20px;
+  border-bottom: 1px solid var(--border); background: var(--bg2); flex-shrink: 0;
+}
+.act-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 14px; border-radius: var(--r); border: none;
+  font-family: var(--font); font-size: 12px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.act-primary { background: var(--blue); color: #fff; }
+.act-primary:hover { background: #6aa3f7; }
+.act-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.act-ghost { background: var(--bg4); color: var(--text2); border: 1px solid var(--border); }
+.act-ghost:hover { border-color: var(--border2); color: var(--text); }
+.act-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+.act-green:hover { background: rgba(52,211,153,0.18); }
+.act-danger { background: var(--red-dim); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+.act-danger:hover { background: rgba(248,113,113,0.18); }
+.act-spacer { flex: 1; }
+
+/* timeline */
+.tl-area { flex: 1; overflow-y: auto; padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.tl-item { display: flex; gap: 10px; }
+.tl-icon {
+  width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 13px;
+  border: 1px solid var(--border);
+}
+.tl-body { flex: 1; }
+.tl-hd { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+.tl-title { font-size: 12px; font-weight: 600; }
+.tl-time { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+.tl-bubble {
+  font-size: 12px; color: var(--text2); line-height: 1.65;
+  background: var(--bg2); padding: 9px 11px; border-radius: 0 var(--r) var(--r) var(--r);
+  border: 1px solid var(--border);
+}
+.tl-footer { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+.emo-stars { display: flex; gap: 2px; }
+.emo-star { font-size: 10px; }
+.tl-kw { font-size: 10px; background: var(--bg4); color: var(--text3); padding: 1px 6px; border-radius: 3px; }
+
+/* ai quick bar */
+.ai-bar {
+  padding: 10px 20px; border-top: 1px solid var(--border);
+  background: var(--bg2); display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.ai-pulse-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); animation: glow-dot 2s infinite; }
+.ai-bar-text { font-size: 12px; color: var(--text2); flex: 1; line-height: 1.5; }
+.ai-bar-text strong { color: var(--blue); }
+
+/* RIGHT */
+.crm-right {
+  width: 340px; flex-shrink: 0; border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; background: var(--bg2);
+}
+.rtabs { display: flex; border-bottom: 1px solid var(--border); }
+.rtab {
+  flex: 1; padding: 11px 4px; text-align: center; font-size: 11px; font-weight: 500;
+  color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+.rtab.active { color: var(--blue); border-bottom-color: var(--blue); }
+.rtab:hover:not(.active) { color: var(--text2); }
+.rpanel { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+/* cards */
+.rcard { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r2); padding: 13px; }
+.rcard-title { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; justify-content: space-between; }
+.rcard-link { font-size: 10px; color: var(--blue); cursor: pointer; font-weight: 400; text-transform: none; letter-spacing: 0; }
+
+/* score ring */
+.score-wrap { display: flex; gap: 12px; align-items: center; }
+.ring-wrap { position: relative; width: 68px; height: 68px; flex-shrink: 0; }
+.ring-wrap svg { transform: rotate(-90deg); }
+.ring-num { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 19px; font-weight: 700; font-family: var(--mono); }
+.score-rows { flex: 1; }
+.srow { display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 2px; }
+.srow-label { color: var(--text2); }
+.srow-val { font-family: var(--mono); font-weight: 600; }
+.sbar { height: 3px; border-radius: 2px; background: var(--bg5); margin-bottom: 5px; }
+.sbar-fill { height: 100%; border-radius: 2px; }
+
+/* tactics */
+.tactic-card {
+  background: var(--bg4); border: 1px solid var(--border); border-radius: var(--r);
+  padding: 10px 11px; cursor: pointer; transition: all 0.15s; margin-bottom: 6px;
+  position: relative;
+}
+.tactic-card:hover { border-color: var(--border2); }
+.tactic-card.sel { border-color: var(--blue); background: rgba(79,142,245,0.07); }
+.tc-top { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+.tc-style { font-size: 10px; font-weight: 600; }
+.tc-rate { margin-left: auto; font-size: 10px; font-family: var(--mono); }
+.tc-text { font-size: 12px; color: var(--text2); line-height: 1.6; }
+.tc-copy { margin-top: 8px; }
+.tc-copy-btn { font-size: 10px; padding: 4px 10px; border-radius: 4px; border: 1px solid var(--border2); background: var(--bg5); color: var(--text2); cursor: pointer; font-family: var(--font); transition: all 0.12s; }
+.tc-copy-btn:hover { border-color: var(--blue); color: var(--blue); }
+
+/* rival compare */
+.rival-compare { display: flex; flex-direction: column; gap: 7px; }
+.rc-row { display: flex; align-items: center; gap: 8px; }
+.rc-name { font-size: 11px; color: var(--text2); width: 68px; flex-shrink: 0; }
+.rc-bar-wrap { flex: 1; height: 5px; background: var(--bg5); border-radius: 3px; }
+.rc-fill { height: 100%; border-radius: 3px; }
+.rc-pct { font-size: 10px; font-family: var(--mono); color: var(--text3); width: 30px; text-align: right; }
+
+/* schedule */
+.schedule-list { display: flex; flex-direction: column; gap: 6px; }
+.sched-item { display: flex; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+.sched-time { font-size: 10px; color: var(--text3); font-family: var(--mono); width: 68px; flex-shrink: 0; line-height: 1.5; }
+.sched-text { font-size: 12px; flex: 1; line-height: 1.5; }
+.sched-pri { font-size: 10px; padding: 2px 6px; border-radius: 3px; font-weight: 500; align-self: flex-start; }
+
+/* maintenance */
+.mt-list { display: flex; flex-direction: column; gap: 5px; }
+.mt-row { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 6px; }
+.mt-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.mt-text { font-size: 11px; flex: 1; }
+.mt-date { font-size: 10px; color: var(--text3); font-family: var(--mono); }
+
+/* ai thinking */
+.ai-thinking { background: rgba(79,142,245,0.05); border: 1px solid rgba(79,142,245,0.14); border-radius: var(--r); padding: 10px 12px; }
+.ai-th-header { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--blue); font-weight: 600; margin-bottom: 6px; }
+.ai-th-text { font-size: 12px; color: var(--text2); line-height: 1.65; white-space: pre-line; }
+.think-bar-wrap { height: 2px; background: var(--bg5); border-radius: 1px; margin-top: 8px; overflow: hidden; }
+.think-bar { height: 100%; background: var(--blue); border-radius: 1px; animation: think 2s ease-in-out infinite; }
+@keyframes think { 0%{width:0;margin-left:0} 50%{width:70%;margin-left:15%} 100%{width:0;margin-left:100%} }
+.ldots span { animation: blink 1.2s infinite; }
+.ldots span:nth-child(2){animation-delay:0.2s} .ldots span:nth-child(3){animation-delay:0.4s}
+@keyframes blink{0%,80%,100%{opacity:0.2}40%{opacity:1}}
+
+/* log */
+.log-list { display: flex; flex-direction: column; gap: 5px; }
+.log-item { display: flex; gap: 7px; padding: 7px 8px; border-radius: 6px; background: var(--bg4); }
+.log-icon { font-size: 12px; width: 16px; flex-shrink: 0; }
+.log-t { font-size: 10px; color: var(--text3); font-family: var(--mono); flex-shrink: 0; }
+.log-msg { font-size: 11px; color: var(--text2); flex: 1; }
+.log-item.log-ai { border-left: 2px solid var(--blue); }
+.log-item.log-human { border-left: 2px solid var(--green); }
+
+/* defeat modal */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); display: flex; align-items: center; justify-content: center; z-index: 200; backdrop-filter: blur(6px); }
+.modal { background: var(--bg2); border: 1px solid var(--border2); border-radius: 18px; padding: 24px; width: 460px; max-width: calc(100vw - 32px); }
+.modal-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+.modal-sub { font-size: 12px; color: var(--text2); margin-bottom: 16px; line-height: 1.6; }
+.reason-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 16px; }
+.reason-chip { padding: 9px 11px; border-radius: var(--r); border: 1px solid var(--border); background: var(--bg3); cursor: pointer; font-size: 12px; color: var(--text2); transition: all 0.12s; text-align: center; position: relative; }
+.reason-chip:hover { border-color: var(--border2); }
+.reason-chip.sel { border-color: var(--blue); background: var(--blue-dim); color: var(--text); }
+.reason-chip.ai-rec::after { content:'AI推荐'; position:absolute; top:-7px; right:6px; font-size:9px; background:var(--blue); color:#fff; padding:1px 5px; border-radius:3px; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; }
+
+/* toast */
+.toast-wrap { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 6px; z-index: 999; }
+.toast { padding: 9px 14px; border-radius: var(--r); font-size: 12px; font-weight: 500; display: flex; align-items: center; gap: 7px; animation: tin 0.22s ease; }
+@keyframes tin { from{transform:translateX(50px);opacity:0} to{transform:translateX(0);opacity:1} }
+.toast-ai { background: rgba(37,99,235,0.92); color: #fff; }
+.toast-ok { background: rgba(22,101,52,0.92); color: #fff; }
+.toast-warn { background: rgba(146,64,14,0.92); color: #fff; }
+
+/* empty */
+.empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--text3); gap: 10px; }
+.empty-icon { font-size: 36px; opacity: 0.25; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 3px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--bg5); border-radius: 2px; }
+
+/* ── HELP MODAL 自定义样式 (指南) ── */
+.help-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.75);
+  display: flex; align-items: center; justify-content: center; z-index: 300;
+  backdrop-filter: blur(8px);
+}
+.help-modal {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 20px; width: 900px; max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 40px); overflow: hidden; display: flex; flex-direction: column;
+}
+.help-header {
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.help-header h2 { font-size: 18px; font-weight: 600; margin:0; display: flex; align-items: center; gap: 8px; }
+.help-close { background: var(--bg4); border: none; font-size: 20px; cursor: pointer; color: var(--text2); width: 32px; height: 32px; border-radius: 40px; display: flex; align-items: center; justify-content: center; transition: 0.1s; }
+.help-close:hover { background: var(--red-dim); color: var(--red); }
+.help-body {
+  flex: 1; overflow-y: auto; padding: 24px;
+  background: var(--bg);
+}
+.help-body h1 { font-size: 24px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.3px; border-left: 4px solid var(--blue); padding-left: 16px; }
+.help-body h2 { font-size: 18px; font-weight: 600; margin: 24px 0 12px 0; color: var(--blue); }
+.help-body h3 { font-size: 15px; font-weight: 600; margin: 20px 0 8px 0; color: var(--cyan); }
+.help-body p { margin-bottom: 12px; line-height: 1.65; color: var(--text2); }
+.help-body table { width: 100%; border-collapse: collapse; margin: 16px 0; background: var(--bg3); border-radius: 12px; overflow: hidden; }
+.help-body th, .help-body td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; font-size: 12px; vertical-align: top; }
+.help-body th { background: var(--bg4); color: var(--blue); font-weight: 600; }
+.help-body code, .help-body pre { font-family: var(--mono); background: var(--bg4); border-radius: 8px; padding: 2px 6px; font-size: 12px; color: var(--cyan); }
+.help-body pre { padding: 12px; overflow-x: auto; margin: 12px 0; }
+.help-body ul, .help-body ol { margin: 10px 0 10px 20px; color: var(--text2); line-height: 1.6; }
+.help-body li { margin: 6px 0; }
+.help-body hr { border-color: var(--border); margin: 20px 0; }
+.help-body .badge { background: var(--blue-dim); color: var(--blue); border-radius: 40px; padding: 2px 8px; font-size: 11px; font-weight: 500; display: inline-block; margin-right: 6px; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo"><div class="logo-gem">⚡</div><span id="topbar-brand-name">AI 销售助手</span></div>
+  <div class="topbar-sep"></div>
+  <div class="topbar-nav">
+    <button class="nav-btn active" onclick="switchView('dashboard')" id="nb-dash">📊 数据总览</button>
+    <button class="nav-btn" onclick="switchView('crm')" id="nb-crm">👥 客户管理</button>
+  </div>
+  <div class="topbar-right">
+    <div class="pill pill-green"><div class="dot-live"></div>Agent 运行中</div>
+    <div class="pill pill-purple" id="topbar-store-pill">品牌 · 门店</div>
+    <div class="pill pill-blue">半自主模式</div>
+    <button onclick="openBrandConfig()" style="background:var(--bg4);border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:var(--font);">⚙ 配置</button>
+    <button onclick="openHelpModal()" style="background:var(--bg4);border:1px solid var(--border);color:var(--text2);border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;font-family:var(--font);">?</button>
+    <div class="topbar-time" id="clock">--:--:--</div>
+  </div>
+</div>
+
+<!-- BRAND CONFIG MODAL -->
+<div class="overlay" id="brand-config-modal" style="display:none">
+  <div class="modal" style="width:480px">
+    <div class="modal-title">⚙ 品牌与 AI 配置</div>
+    <div class="modal-sub">配置后，所有界面文案和 AI 生成话术将自动适配您的品牌。</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+      <div style="display:grid;grid-template-columns:90px 1fr;align-items:center;gap:10px">
+        <label style="font-size:12px;color:var(--text2)">品牌名称</label>
+        <input id="cfg-brand" style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:6px 10px;font-size:12px;font-family:var(--font);outline:none;width:100%" placeholder="如：蔚来、小鹏、理想、问界">
+      </div>
+      <div style="display:grid;grid-template-columns:90px 1fr;align-items:center;gap:10px">
+        <label style="font-size:12px;color:var(--text2)">门店位置</label>
+        <input id="cfg-store" style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:6px 10px;font-size:12px;font-family:var(--font);outline:none;width:100%" placeholder="如：北京朝阳店">
+      </div>
+      <div style="display:grid;grid-template-columns:90px 1fr;align-items:center;gap:10px">
+        <label style="font-size:12px;color:var(--text2)">核心卖点</label>
+        <input id="cfg-usp" style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:6px 10px;font-size:12px;font-family:var(--font);outline:none;width:100%" placeholder="如：换电网络、NIO Life、社区文化">
+      </div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:4px 0">
+      <div style="font-size:11px;color:var(--blue);font-weight:600">🤖 AI 模型配置</div>
+      <div style="display:grid;grid-template-columns:90px 1fr;align-items:center;gap:10px">
+        <label style="font-size:12px;color:var(--text2)">模型选择</label>
+        <select id="cfg-model" onchange="updateModelHint()" style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:6px 10px;font-size:12px;font-family:var(--font);outline:none;width:100%">
+          <option value="deepseek">DeepSeek Chat（推荐·国内稳定）</option>
+          <option value="qwen">通义千问 Qwen-Plus</option>
+          <option value="zhipu">智谱 GLM-4-Flash</option>
+          <option value="moonshot">月之暗面 Moonshot</option>
+          <option value="demo">🎭 演示模式（无需Key）</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:90px 1fr;align-items:center;gap:10px">
+        <label style="font-size:12px;color:var(--text2)">API Key</label>
+        <input id="cfg-apikey" type="password" style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);padding:6px 10px;font-size:12px;font-family:var(--font);outline:none;width:100%" placeholder="留空则使用演示模式">
+      </div>
+      <div id="cfg-model-hint" style="font-size:11px;color:var(--text3);padding:8px 10px;background:var(--bg4);border-radius:6px;line-height:1.7"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="act-btn act-ghost" onclick="closeBrandConfig()">取消</button>
+      <button class="act-btn act-primary" onclick="saveBrandConfig()">✓ 保存并应用</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD VIEW -->
+<div id="view-dashboard" class="active">
+<!-- HELP MODAL -->
+<div class="overlay" id="help-modal" style="display:none">
+  <div class="modal" style="width:800px;max-height:80vh;overflow-y:auto">
+    <div class="modal-title">帮助文档</div>
+    <pre style="white-space:pre-wrap;font-size:12px;color:var(--text);line-height:1.5;">帮助文档内容：
+
+这是AI智能销售助手的使用说明。
+
+功能包括：
+- 数据总览
+- 客户管理
+- AI话术生成
+- 竞品分析
+
+点击右上角配置按钮可设置品牌信息。</pre>
+    <div class="modal-footer">
+      <button class="act-btn act-ghost" onclick="closeHelpModal()">关闭</button>
+    </div>
+  </div>
+</div>
+
+  <!-- AI Insight Strip -->
+  <div class="insight-strip" style="margin:16px 24px 0; flex-shrink:0">
+    <div class="insight-icon">🤖</div>
+    <div class="insight-text">
+      <strong>今日 AI 洞察</strong>：检测到 <strong>3条高意向线索</strong> 超过24小时未跟进，预计损失转化机会约 <strong>2台</strong>。张明阳在竞品对比阶段，建议优先联系并发送换电优势对比资料。孙美玲情绪负面，建议改用文字沟通并提供限时优惠。
+    </div>
+    <div class="insight-actions">
+      <button class="act-btn act-primary" onclick="switchView('crm'); setTimeout(()=>selectLead(1),200)">立即处理</button>
+      <button class="act-btn act-ghost">忽略</button>
+    </div>
+  </div>
+
+  <!-- Batch defeat banner -->
+  <div id="batch-defeat-banner" style="margin:10px 24px 0;flex-shrink:0;background:linear-gradient(135deg,rgba(248,113,113,0.1),rgba(251,191,36,0.06));border:1px solid rgba(248,113,113,0.25);border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:14px;">
+    <div style="font-size:28px;font-weight:700;font-family:var(--mono);color:var(--red)" id="batch-low-count">3</div>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px">⚡ AI 识别到低质线索，建议一键批量战败归因</div>
+      <div style="font-size:11px;color:var(--text2)">评分 &lt;40 线索：<span id="batch-low-names" style="color:var(--red)">加载中...</span>，超30天无响应</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-shrink:0">
+      <button class="act-btn act-ghost" onclick="document.getElementById('batch-defeat-banner').style.display='none'">忽略</button>
+      <button class="act-btn act-danger" onclick="openBatchDefeatModal()">⚡ 一键批量战败</button>
+    </div>
+  </div>
+
+  <!-- BATCH DEFEAT MODAL -->
+  <div class="overlay" id="batch-defeat-modal" style="display:none">
+    <div class="modal" style="width:520px">
+      <div class="modal-title">⚡ AI 半自主：批量战败归因</div>
+      <div class="modal-sub">AI 已自动分析各线索最可能的战败原因，按需调整后一键确认。此操作可在日志中撤销。</div>
+      <div id="batch-defeat-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;max-height:280px;overflow-y:auto"></div>
+      <div style="background:var(--bg3);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--text2);margin-bottom:14px">
+        <strong style="color:var(--amber)">⚠ 半自主确认：</strong>以上为 AI 建议，点击确认后系统自动标记并归档，可在操作日志中恢复。
+      </div>
+      <div class="modal-footer">
+        <button class="act-btn act-ghost" onclick="closeBatchDefeatModal()">取消</button>
+        <button class="act-btn act-danger" onclick="confirmBatchDefeat()">⚡ 确认批量战败（<span id="batch-confirm-count">0</span>条）</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div class="dash-grid" style="margin:10px 24px 0; flex-shrink:0">
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-label">本月线索总数</div>
+      <div class="kpi-value">248</div>
+      <div class="kpi-sub"><span class="kpi-trend-up">↑ 18%</span>&nbsp;vs 上月</div>
+    </div>
+    <div class="kpi-card kpi-green">
+      <div class="kpi-label">邀约到店率</div>
+      <div class="kpi-value">41%</div>
+      <div class="kpi-sub"><span class="kpi-trend-up">↑ 6%</span>&nbsp;AI介入后</div>
+    </div>
+    <div class="kpi-card kpi-amber">
+      <div class="kpi-label">成交转化率</div>
+      <div class="kpi-value">12.3%</div>
+      <div class="kpi-sub"><span class="kpi-trend-up">↑ 2.1%</span>&nbsp;环比</div>
+    </div>
+    <div class="kpi-card kpi-purple">
+      <div class="kpi-label">AI话术采纳率</div>
+      <div class="kpi-value">68%</div>
+      <div class="kpi-sub">本月 <strong>1,024</strong> 次生成</div>
+    </div>
+  </div>
+
+  <!-- Middle row -->
+  <div class="dash-row" style="margin:12px 24px 0; flex:1; min-height:0">
+
+    <!-- Pipeline funnel -->
+    <div class="section-card dash-wide" style="display:flex;flex-direction:column">
+      <div class="section-title">🎯 销售漏斗（本月）</div>
+      <div class="funnel">
+        <div class="funnel-row">
+          <div class="funnel-label">线索到达</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:100%;background:rgba(79,142,245,0.3)">
+              <span style="color:var(--blue)">248</span>
+            </div>
+          </div>
+          <div class="funnel-pct">100%</div>
+        </div>
+        <div class="funnel-row">
+          <div class="funnel-label">初次跟进</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:87%;background:rgba(34,211,238,0.25)">
+              <span style="color:var(--cyan)">216</span>
+            </div>
+          </div>
+          <div class="funnel-pct">87%</div>
+        </div>
+        <div class="funnel-row">
+          <div class="funnel-label">邀约到店</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:41%;background:rgba(167,139,250,0.25)">
+              <span style="color:var(--purple)">102</span>
+            </div>
+          </div>
+          <div class="funnel-pct">41%</div>
+        </div>
+        <div class="funnel-row">
+          <div class="funnel-label">价格谈判</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:22%;background:rgba(251,191,36,0.25)">
+              <span style="color:var(--amber)">55</span>
+            </div>
+          </div>
+          <div class="funnel-pct">22%</div>
+        </div>
+        <div class="funnel-row">
+          <div class="funnel-label">已成交</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:12%;background:rgba(52,211,153,0.3)">
+              <span style="color:var(--green)">31</span>
+            </div>
+          </div>
+          <div class="funnel-pct">12%</div>
+        </div>
+      </div>
+
+      <div style="height:1px;background:var(--border);margin:14px 0"></div>
+
+      <!-- Competitor heatmap -->
+      <div class="section-title" style="margin-bottom:10px">🏁 竞品威胁指数</div>
+      <div class="rival-grid">
+        <div class="rival-cell" style="background:rgba(248,113,113,0.12);border-color:rgba(248,113,113,0.2)">
+          <div class="rival-cell-name">理想</div>
+          <div class="rival-cell-num" style="color:var(--red)">38</div>
+        </div>
+        <div class="rival-cell" style="background:rgba(251,191,36,0.1);border-color:rgba(251,191,36,0.2)">
+          <div class="rival-cell-name">小鹏</div>
+          <div class="rival-cell-num" style="color:var(--amber)">24</div>
+        </div>
+        <div class="rival-cell" style="background:rgba(251,191,36,0.08);border-color:rgba(251,191,36,0.15)">
+          <div class="rival-cell-name">比亚迪</div>
+          <div class="rival-cell-num" style="color:var(--amber)">19</div>
+        </div>
+        <div class="rival-cell" style="background:rgba(79,142,245,0.08);border-color:rgba(79,142,245,0.15)">
+          <div class="rival-cell-name">特斯拉</div>
+          <div class="rival-cell-num" style="color:var(--blue)">12</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: alerts + emotion -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+
+      <!-- AI alerts -->
+      <div class="section-card" style="flex:1">
+        <div class="section-title">⚡ AI 待处理提醒</div>
+        <div class="alert-list" id="dash-alerts">
+          <div class="alert-item" onclick="gotoLead(7)">
+            <div class="alert-dot" style="background:var(--red)"></div>
+            <div style="flex:1">
+              <span class="alert-name">孙美玲</span>
+              <span class="alert-msg" style="font-size:12px;color:var(--text2)">情绪负面，3天未跟进，建议立即处理</span>
+            </div>
+            <button class="alert-act" style="background:var(--red-dim);color:var(--red);border:none" onclick="event.stopPropagation();gotoLead(7)">处理</button>
+          </div>
+          <div class="alert-item" onclick="gotoLead(1)">
+            <div class="alert-dot" style="background:var(--amber)"></div>
+            <div style="flex:1">
+              <span class="alert-name">张明阳</span>
+              <span class="alert-msg" style="font-size:12px;color:var(--text2)">在竞品理想L9比较阶段，窗口期有限</span>
+            </div>
+            <button class="alert-act" style="background:var(--amber-dim);color:var(--amber);border:none" onclick="event.stopPropagation();gotoLead(1)">跟进</button>
+          </div>
+          <div class="alert-item" onclick="gotoLead(8)">
+            <div class="alert-dot" style="background:var(--text3)"></div>
+            <div style="flex:1">
+              <span class="alert-name">吴天成</span>
+              <span class="alert-msg" style="font-size:12px;color:var(--text2)">AI建议战败归因，已超30天无响应</span>
+            </div>
+            <button class="alert-act" style="background:var(--text3);color:var(--text);border:none" onclick="event.stopPropagation();gotoLead(8)">归因</button>
+          </div>
+          <div class="alert-item" onclick="gotoLead(4)">
+            <div class="alert-dot" style="background:var(--green)"></div>
+            <div style="flex:1">
+              <span class="alert-name">陈晓蕾</span>
+              <span class="alert-msg" style="font-size:12px;color:var(--text2)">本周六试驾已确认，提前准备资料</span>
+            </div>
+            <button class="alert-act" style="background:var(--green-dim);color:var(--green);border:none" onclick="event.stopPropagation();gotoLead(4)">准备</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emotion distribution -->
+      <div class="section-card">
+        <div class="section-title">😊 客户情绪分布</div>
+        <div class="emotion-dist">
+          <div class="emo-row"><div class="emo-icon">😄</div><div class="emo-bar-wrap"><div class="emo-bar" style="width:70%;background:var(--green)"></div></div><div class="emo-count" style="color:var(--green)">7</div></div>
+          <div class="emo-row"><div class="emo-icon">😐</div><div class="emo-bar-wrap"><div class="emo-bar" style="width:20%;background:var(--amber)"></div></div><div class="emo-count" style="color:var(--amber)">2</div></div>
+          <div class="emo-row"><div class="emo-icon">😟</div><div class="emo-bar-wrap"><div class="emo-bar" style="width:10%;background:var(--red)"></div></div><div class="emo-count" style="color:var(--red)">1</div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div style="height:20px;flex-shrink:0"></div>
+</div>
+
+<!-- CRM VIEW -->
+<div id="view-crm">
+
+  <!-- LEFT -->
+  <div class="crm-left">
+    <div class="left-search">
+      <div class="search-wrap">
+        <span style="color:var(--text3);font-size:12px">🔍</span>
+        <input type="text" placeholder="搜索客户、车型..." oninput="filterLeads(this.value)" id="search-input">
+      </div>
+    </div>
+    <div class="filter-pills">
+      <div class="filter-pill on" onclick="toggleFilter(this,'all')">全部</div>
+      <div class="filter-pill" onclick="toggleFilter(this,'high')">高意向</div>
+      <div class="filter-pill" onclick="toggleFilter(this,'warn')">待跟进</div>
+      <div class="filter-pill" onclick="toggleFilter(this,'aftersale')">售后</div>
+    </div>
+    <div class="leads-scroll" id="leads-list"></div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="crm-center" id="crm-center">
+    <div class="empty">
+      <div class="empty-icon">👈</div>
+      <div>从左侧选择客户</div>
+      <div style="font-size:11px">AI Agent 已就绪</div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="crm-right">
+    <div class="rtabs">
+      <div class="rtab active" onclick="switchTab('ai')" id="t-ai">🤖 AI建议</div>
+      <div class="rtab" onclick="switchTab('rival')" id="t-rival">🏁 竞品</div>
+      <div class="rtab" onclick="switchTab('sched')" id="t-sched">📅 计划</div>
+      <div class="rtab" onclick="switchTab('log')" id="t-log">📋 日志</div>
+    </div>
+    <div class="rpanel" id="rpanel">
+      <div style="color:var(--text3);font-size:12px;text-align:center;margin-top:40px">选择客户后 AI 将自动分析</div>
+    </div>
+  </div>
+</div>
+
+<!-- Defeat Modal -->
+<div class="overlay" id="defeat-modal" style="display:none">
+  <div class="modal">
+    <div class="modal-title">📋 战败归因</div>
+    <div class="modal-sub" id="defeat-note">AI 正在分析战败原因...</div>
+    <div class="reason-grid" id="reason-grid"></div>
+    <div class="modal-footer">
+      <button class="act-btn act-ghost" onclick="closeDefeat()">取消</button>
+      <button class="act-btn act-danger" onclick="confirmDefeat()">确认战败</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 新增：帮助指南模态框 ========== -->
+<div id="helpGuideModal" class="help-overlay" style="display:none" onclick="if(event.target===this) closeHelpModal()">
+  <div class="help-modal">
+    <div class="help-header">
+      <h2>📚 帮助指南</h2>
+      <button class="help-close" onclick="closeHelpModal()">×</button>
+    </div>
+    <div class="help-body">
+      <h1>蔚来智能销售助手使用指南</h1>
+
+      <p>欢迎使用蔚来智能销售助手，这是一个基于AI的销售管理系统，能够帮助销售人员更高效地管理客户线索、生成个性化话术，并提供智能分析和建议。</p>
+
+      <h2>🚀 快速开始</h2>
+
+      <h3>1. 品牌配置</h3>
+      <p>首次使用时，点击右上角 <span class="badge">⚙ 配置</span> 按钮，设置您的品牌信息和AI模型参数。配置完成后，所有界面文案和AI生成的话术将自动适配您的品牌。</p>
+
+      <h3>2. 数据总览</h3>
+      <p>在 <span class="badge">📊 数据总览</span> 页面，您可以查看：</p>
+      <ul>
+        <li>关键绩效指标（KPI）</li>
+        <li>销售漏斗分析</li>
+        <li>竞品威胁指数</li>
+        <li>AI智能提醒</li>
+        <li>客户情绪分布</li>
+      </ul>
+
+      <h3>3. 客户管理</h3>
+      <p>切换到 <span class="badge">👥 客户管理</span> 页面进行客户操作：</p>
+      <ul>
+        <li>从左侧列表选择客户</li>
+        <li>查看客户详细信息和时间线</li>
+        <li>使用右侧AI建议生成话术</li>
+        <li>管理客户标签和状态</li>
+      </ul>
+
+      <h2>🤖 AI功能说明</h2>
+
+      <h3>AI话术生成</h3>
+      <p>系统支持多种话术生成场景：</p>
+      <table>
+        <tr>
+          <th>场景</th>
+          <th>说明</th>
+          <th>适用阶段</th>
+        </tr>
+        <tr>
+          <td>初次接触</td>
+          <td>生成友好的开场白，建立信任</td>
+          <td>初步联系</td>
+        </tr>
+        <tr>
+          <td>产品介绍</td>
+          <td>根据客户偏好定制产品亮点</td>
+          <td>线索跟进</td>
+        </tr>
+        <tr>
+          <td>竞品对比</td>
+          <td>突出蔚来优势，化解疑虑</td>
+          <td>邀约到店</td>
+        </tr>
+        <tr>
+          <td>价格谈判</td>
+          <td>提供灵活方案，促成成交</td>
+          <td>价格谈判</td>
+        </tr>
+      </table>
+
+      <h3>智能分析</h3>
+      <p>AI会自动分析：</p>
+      <ul>
+        <li>客户情绪状态</li>
+        <li>购买意向强度</li>
+        <li>竞品关注度</li>
+        <li>最佳跟进时机</li>
+        <li>战败原因预测</li>
+      </ul>
+
+      <h2>⚙ 配置选项</h2>
+
+      <h3>品牌设置</h3>
+      <ul>
+        <li><strong>品牌名称：</strong>如蔚来、小鹏、理想等</li>
+        <li><strong>门店位置：</strong>具体门店地址</li>
+        <li><strong>核心卖点：</strong>品牌独特优势</li>
+      </ul>
+
+      <h3>AI模型配置</h3>
+      <p>支持多种AI模型：</p>
+      <ul>
+        <li><strong>DeepSeek Chat：</strong>推荐，国内稳定</li>
+        <li><strong>通义千问：</strong>阿里云模型</li>
+        <li><strong>智谱GLM：</strong>清华系模型</li>
+        <li><strong>月之暗面：</strong>Kimi模型</li>
+        <li><strong>演示模式：</strong>无需API Key</li>
+      </ul>
+
+      <h2>📊 数据面板说明</h2>
+
+      <h3>KPI指标</h3>
+      <ul>
+        <li><strong>线索总数：</strong>本月新增客户线索</li>
+        <li><strong>邀约到店率：</strong>线索转化为到店的比例</li>
+        <li><strong>成交转化率：</strong>最终成交比例</li>
+        <li><strong>AI话术采纳率：</strong>使用AI生成话术的比例</li>
+      </ul>
+
+      <h3>销售漏斗</h3>
+      <p>展示从线索获取到成交的完整流程转化率，帮助识别销售瓶颈。</p>
+
+      <h3>竞品威胁指数</h3>
+      <p>基于客户关注度和市场数据，量化各竞品的影响力。</p>
+
+      <h2>🎯 最佳实践</h2>
+
+      <h3>日常使用建议</h3>
+      <ol>
+        <li>每天查看AI洞察，优先处理高意向线索</li>
+        <li>定期检查情绪负面的客户，及时调整沟通策略</li>
+        <li>利用AI生成的话术，但结合个人经验适当调整</li>
+        <li>及时更新客户状态，确保数据准确性</li>
+      </ol>
+
+      <h3>效率提升技巧</h3>
+      <ul>
+        <li>使用批量战败功能清理无效线索</li>
+        <li>设置客户标签，便于分类管理</li>
+        <li>关注时间线记录，了解客户全貌</li>
+        <li>定期查看操作日志，优化销售流程</li>
+      </ul>
+
+      <h2>🔧 故障排除</h2>
+
+      <h3>常见问题</h3>
+      <ul>
+        <li><strong>AI生成失败：</strong>检查API Key配置和网络连接</li>
+        <li><strong>数据不更新：</strong>刷新页面或检查浏览器缓存</li>
+        <li><strong>界面显示异常：</strong>尝试清除浏览器缓存</li>
+      </ul>
+
+      <h3>技术支持</h3>
+      <p>如遇到技术问题，请联系技术支持团队或查看系统日志获取更多信息。</p>
+
+      <hr>
+
+      <p style="text-align: center; color: var(--text3); font-size: 12px;">
+        版本 1.0.0 | © 2024 蔚来汽车 | AI驱动的智能销售解决方案
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+// ══════════════ DATA ══════════════
+const STAGES = ['初步联系','线索跟进','邀约到店','价格谈判','已成交'];
+
+const LEADS = [
+  { id:1, name:'张明阳', av:'张', avColor:'#3b6ef5', score:92,
+    phone:'138****2891', channel:'抖音留资', stage:'邀约到店',
+    model:'ET7 75kWh', budget:'40-50万', priceSens:'中',
+    identityTags:['首购新能源','科技爱好者','35岁·男'],
+    emotionState:'积极',
+    rival:'理想L9', rivalScore:72,
+    status:'warn', statusLabel:'高意向·对比中',
+    lastContact:'2小时前',
+    timeline:[
+      { type:'msg', icon:'💬', title:'企微沟通', time:'今天 09:31', content:'主动询问ET7的NOMI智能助手功能，问与理想的对比差异。表示家人也很关心充电便利性。', emotion:4, kws:['NOMI','理想对比','充电便利'] },
+      { type:'call', icon:'📞', title:'电话跟进', time:'昨天 16:20', content:'通话9分钟。提到"比理想L9贵了3万，但蔚来换电很方便"，对换电模式感兴趣，顾虑是续航里程上限。', emotion:3, kws:['价格差3万','换电感兴趣','续航顾虑'] },
+      { type:'visit', icon:'🏪', title:'首次到店', time:'5月8日', content:'携家属参观展车，试坐ET7，对内饰和座椅舒适度评价很高。留下联系方式，计划两周内决策。', emotion:5, kws:['家属同行','内饰认可','两周决策'] },
+    ],
+    upsell:null, maintenance:null,
+  },
+  { id:2, name:'王雅琴', av:'王', avColor:'#7c3aed', score:78,
+    phone:'139****5542', channel:'官网留资', stage:'线索跟进',
+    model:'ES6 75kWh', budget:'30-40万', priceSens:'高',
+    identityTags:['换购新能源','上班通勤','28岁·女'],
+    emotionState:'中性',
+    rival:'小鹏G6', rivalScore:65,
+    status:'warn', statusLabel:'3天未跟进',
+    lastContact:'3天前',
+    timeline:[
+      { type:'msg', icon:'💬', title:'企微沟通', time:'5月11日', content:'询问ES6和小鹏G6对比，特别关注价格差异和补贴政策，希望有优惠方案。', emotion:3, kws:['价格对比','补贴政策','优惠方案'] },
+      { type:'call', icon:'📞', title:'电话跟进', time:'5月9日', content:'表示还在对比阶段，需要再考虑。态度偏冷淡，通话约3分钟。', emotion:2, kws:['仍在对比','态度冷淡'] },
+    ],
+    upsell:null, maintenance:null,
+  },
+  { id:3, name:'李博文', av:'李', avColor:'#059669', score:45,
+    phone:'137****8876', channel:'线下活动', stage:'线索跟进',
+    model:'EC6 100kWh', budget:'50万+', priceSens:'低',
+    identityTags:['特斯拉车主','换购豪华','42岁·男'],
+    emotionState:'中性',
+    rival:'特斯拉Model Y', rivalScore:80,
+    status:'cold', statusLabel:'沉默2周',
+    lastContact:'2周前',
+    timeline:[
+      { type:'call', icon:'📞', title:'电话跟进', time:'5月4日', content:'已在用特斯拉Model Y，对蔚来了解不多，愿意听介绍但态度不积极。', emotion:2, kws:['特斯拉车主','态度被动'] },
+    ],
+    upsell:null, maintenance:null,
+  },
+  { id:4, name:'陈晓蕾', av:'陈', avColor:'#d97706', score:88,
+    phone:'186****3310', channel:'老客户推荐', stage:'邀约到店',
+    model:'ET5T 75kWh', budget:'35-45万', priceSens:'中',
+    identityTags:['老客推荐','家庭用车','32岁·女'],
+    emotionState:'积极',
+    rival:'理想L7', rivalScore:60,
+    status:'active', statusLabel:'本周六试驾',
+    lastContact:'昨天',
+    timeline:[
+      { type:'visit', icon:'🏪', title:'预约试驾', time:'本周六 14:00', content:'王总推荐，对ET5T旅行版感兴趣，已约本周六14:00到店试驾。需提前准备对比资料。', emotion:4, kws:['老客推荐','试驾确认','旅行版'] },
+      { type:'msg', icon:'💬', title:'确认消息', time:'今天 08:45', content:'发送试驾确认，客户回复"到时候见！"，情绪非常积极。', emotion:5, kws:['确认到店','情绪积极'] },
+    ],
+    upsell:null, maintenance:null,
+  },
+  { id:5, name:'赵思宇', av:'赵', avColor:'#0891b2', score:62,
+    phone:'180****7723', channel:'直播间留资', stage:'初步联系',
+    model:'ES8 100kWh', budget:'55-70万', priceSens:'低',
+    identityTags:['首购豪华SUV','大家庭','38岁·男'],
+    emotionState:'积极',
+    rival:'问界M9', rivalScore:75,
+    status:'new', statusLabel:'今日新增',
+    lastContact:'今天',
+    timeline:[
+      { type:'msg', icon:'💬', title:'直播留资', time:'今天 10:05', content:'通过直播间留资，询问ES8 7座空间和老人乘坐舒适性，家有老人和小孩。', emotion:3, kws:['7座空间','老人舒适','家庭用车'] },
+    ],
+    upsell:null, maintenance:null,
+  },
+  { id:6, name:'刘鑫然', av:'刘', avColor:'#16a34a', score:96,
+    phone:'135****9981', channel:'门店成交', stage:'已成交',
+    model:'ET7 100kWh', budget:'已购',
+    priceSens:'低',
+    identityTags:['蔚来车主','高净值','45岁·男'],
+    emotionState:'积极',
+    rival:null, rivalScore:0,
+    status:'active', statusLabel:'维保客户',
+    lastContact:'上月',
+    timeline:[
+      { type:'visit', icon:'🔧', title:'第3次保养', time:'4月15日', content:'完成第3次免费保养（20000km），车辆状态良好，主动询问延保套餐。', emotion:5, kws:['保养完成','询问延保'] },
+      { type:'msg', icon:'💬', title:'满意度回访', time:'4月20日', content:'满意度评分9.5/10，表示会推荐朋友，有两位朋友正在考虑购车。', emotion:5, kws:['9.5分','推荐意愿高'] },
+    ],
+    maintenance:{ done:['首保 5000km · 2023/08','第2次 10000km · 2023/12','第3次 20000km · 2024/04'], next:'第4次 30000km · 预计2024/08', predict:'延保套餐到期 · 2025/09' },
+    upsell:['蔚来延保套餐 ¥12,800','全车隐形车衣 ¥6,500','充电桩升级 ¥3,200'],
+  },
+  { id:7, name:'孙美玲', av:'孙', avColor:'#be185d', score:55,
+    phone:'150****4418', channel:'小红书', stage:'线索跟进',
+    model:'ES6 75kWh', budget:'30-38万', priceSens:'高',
+    identityTags:['价格敏感型','首购新能源','26岁·女'],
+    emotionState:'负面',
+    rival:'比亚迪汉EV', rivalScore:70,
+    status:'warn', statusLabel:'情绪负面·待处理',
+    lastContact:'昨天',
+    timeline:[
+      { type:'msg', icon:'💬', title:'企微沟通', time:'昨天 20:35', content:'表示"蔚来太贵了，BYD汉EV才23万，性价比差太多"。情绪略带不满，需针对性话术应对。', emotion:1, kws:['价格质疑','BYD对比','性价比'] },
+      { type:'call', icon:'📞', title:'电话跟进', time:'前天 11:00', content:'15分钟通话，详细询问ES6换电网络覆盖和NIO Life权益，对体验认可但价格是最大阻碍。', emotion:3, kws:['换电网络','NIO Life','价格阻碍'] },
+    ],
+    upsell:null, maintenance:null,
+  },
+  { id:8, name:'吴天成', av:'吴', avColor:'#6b7280', score:35,
+    phone:'177****2256', channel:'展会', stage:'线索跟进',
+    model:'ET5 75kWh', budget:'25-32万', priceSens:'低',
+    identityTags:['竞品倾向','价格敏感','30岁·男'],
+    emotionState:'负面',
+    rival:'小鹏P7i', rivalScore:85,
+    status:'cold', statusLabel:'AI建议战败',
+    lastContact:'1个月前',
+    timeline:[
+      { type:'call', icon:'📞', title:'最后联系', time:'4月10日', content:'表示"已考虑小鹏P7i了，对方优惠力度更大"，通话不足2分钟挂断。', emotion:1, kws:['小鹏已倾向','通话极短'] },
+    ],
+    upsell:null, maintenance:null,
+  },
+  { id:9, name:'郑悦华', av:'郑', avColor:'#7c3aed', score:70,
+    phone:'132****0087', channel:'企业购车', stage:'价格谈判',
+    model:'ES8 100kWh ×3台', budget:'150-180万',
+    priceSens:'中',
+    identityTags:['企业采购','团购决策','B端客户'],
+    emotionState:'中性',
+    rival:'理想MEGA', rivalScore:55,
+    status:'active', statusLabel:'企业团购谈判中',
+    lastContact:'今天',
+    timeline:[
+      { type:'visit', icon:'🏪', title:'企业洽谈', time:'今天 09:00', content:'代表公司谈3台ES8采购，询问企业专属优惠和上牌服务，决策周期约2周。', emotion:3, kws:['3台团购','企业优惠','2周决策'] },
+      { type:'msg', icon:'💬', title:'需求清单', time:'5月12日', content:'发来采购需求：统一颜色（深空灰），企业LOGO车贴，充电桩上门安装服务。', emotion:3, kws:['颜色统一','LOGO定制','充电桩安装'] },
+    ],
+    upsell:null, maintenance:null,
+  },
+  { id:10, name:'韩子轩', av:'韩', avColor:'#c2410c', score:83,
+    phone:'188****6634', channel:'公众号', stage:'邀约到店',
+    model:'EC7 100kWh', budget:'45-55万', priceSens:'低',
+    identityTags:['豪华品牌对比','高净值','41岁·男'],
+    emotionState:'积极',
+    rival:'保时捷Cayenne', rivalScore:50,
+    status:'active', statusLabel:'高价值线索',
+    lastContact:'2天前',
+    timeline:[
+      { type:'msg', icon:'💬', title:'公众号咨询', time:'5月11日', content:'在保时捷和蔚来之间做最终选择，已看过Cayenne E-Hybrid，问EC7差异化优势。', emotion:4, kws:['保时捷对比','最终选择','差异化'] },
+      { type:'call', icon:'📞', title:'深度沟通', time:'5月10日', content:'通话35分钟，聊了换电vs充电使用场景、NIO APP生态和蔚来社区文化。对品牌调性有共鸣。', emotion:4, kws:['换电场景','NIO生态','品牌共鸣'] },
+    ],
+    upsell:null, maintenance:null,
+  },
+];
+
+const DEFEAT_REASONS = [
+  {label:'竞品价格优势', aiRec:true},
+  {label:'预算变化', aiRec:false},
+  {label:'决策延迟', aiRec:false},
+  {label:'失去联系', aiRec:false},
+  {label:'体验不满意', aiRec:false},
+  {label:'等待新款', aiRec:false},
+];
+
+let selectedLead = null;
+let currentTab = 'ai';
+let selectedTactics = null;
+let selectedReason = null;
+const ACTION_LOG = [];
+let activeFilter = 'all';
+
+// ══════════════ CLOCK ══════════════
+setInterval(() => {
+  document.getElementById('clock').textContent = new Date().toLocaleTimeString('zh-CN',{hour12:false});
+}, 1000);
+
+// ══════════════ VIEW SWITCH ══════════════
+function switchView(v) {
+  document.getElementById('view-dashboard').classList.toggle('active', v === 'dashboard');
+  document.getElementById('view-crm').classList.toggle('active', v === 'crm');
+  document.getElementById('nb-dash').classList.toggle('active', v === 'dashboard');
+  document.getElementById('nb-crm').classList.toggle('active', v === 'crm');
+}
+
+function gotoLead(id) {
+  switchView('crm');
+  setTimeout(() => selectLead(id), 100);
+}
+
+// ══════════════ LEAD LIST ══════════════
+function getFilteredLeads(q = '', filter = activeFilter) {
+  return LEADS.filter(l => {
+    const matchQ = !q || l.name.includes(q) || (l.model||'').includes(q) || l.stage.includes(q);
+    const matchF = filter === 'all' || (filter === 'high' && l.score >= 80) ||
+      (filter === 'warn' && l.status === 'warn') ||
+      (filter === 'aftersale' && l.stage === '已成交');
+    return matchQ && matchF;
+  });
+}
+
+function renderLeads() {
+  const list = document.getElementById('leads-list');
+  const filtered = getFilteredLeads(document.getElementById('search-input')?.value || '', activeFilter);
+  list.innerHTML = filtered.map(l => `
+    <div class="lead-item ${selectedLead?.id === l.id ? 'active' : ''}" onclick="selectLead(${l.id})">
+      <div class="lead-row1">
+        <div class="lead-name">${l.name}</div>
+        <div class="lead-score-badge" style="background:${l.score >= 80 ? 'rgba(52,211,153,0.2)' : l.score >= 60 ? 'rgba(251,191,36,0.2)' : 'rgba(248,113,113,0.2)'}; color:${l.score >= 80 ? 'var(--green)' : l.score >= 60 ? 'var(--amber)' : 'var(--red)'}">${l.score}</div>
+      </div>
+      <div class="lead-row2">
+        <div class="lead-model">${l.model || '未指定'}</div>
+        <div class="lead-time">${l.lastContact}</div>
+      </div>
+      <div class="lead-tags-row">
+        ${l.identityTags.slice(0,2).map(t => `<span class="mini-tag" style="background:${t.includes('首购') ? 'rgba(34,211,238,0.1)' : t.includes('换购') ? 'rgba(167,139,250,0.1)' : 'rgba(79,142,245,0.1)'}; color:${t.includes('首购') ? 'var(--cyan)' : t.includes('换购') ? 'var(--purple)' : 'var(--blue)'}">${t}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ══════════════ LEAD SELECTION ══════════════
+function selectLead(id) {
+  selectedLead = LEADS.find(l => l.id === id);
+  document.querySelectorAll('.lead-item').forEach(el => el.classList.toggle('active', el.onclick.toString().includes(`selectLead(${id})`)));
+  renderCustomerView();
+  switchTab('ai');
+}
+
+// ══════════════ CUSTOMER VIEW ══════════════
+function renderCustomerView() {
+  if (!selectedLead) return;
+  const l = selectedLead;
+  const center = document.getElementById('crm-center');
+  center.innerHTML = `
+    <div class="cust-hero">
+      <div class="hero-top">
+        <div class="hero-avatar" style="background:linear-gradient(135deg, ${l.avColor}, ${l.avColor}aa); color:#fff">${l.av}</div>
+        <div class="hero-main">
+          <div class="hero-name">${l.name} <span class="pill pill-${l.emotionState === '积极' ? 'green' : l.emotionState === '中性' ? 'amber' : 'red'}">${l.emotionState}</span></div>
+          <div class="hero-contact">${l.phone} · ${l.channel}</div>
+          <div class="tag-cluster">
+            ${l.identityTags.map(t => `<span class="vtag vtag-identity">${t}</span>`).join('')}
+            <span class="vtag vtag-emotion-${l.emotionState === '积极' ? 'pos' : l.emotionState === '中性' ? 'neu' : 'neg'}">${l.emotionState}</span>
+            ${l.rival ? `<span class="vtag vtag-rival">竞品：${l.rival}</span>` : ''}
+            <span class="vtag vtag-budget">预算：${l.budget}</span>
+            <span class="vtag vtag-channel">${l.channel}</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><div class="hs-val">${l.score}</div><div class="hs-lbl">意向评分</div></div>
+        <div class="hero-stat"><div class="hs-val">${l.rivalScore || 0}</div><div class="hs-lbl">竞品倾向</div></div>
+        <div class="hero-stat"><div class="hs-val">${l.priceSens === '高' ? '高' : l.priceSens === '中' ? '中' : '低'}</div><div class="hs-lbl">价格敏感</div></div>
+      </div>
+      <div class="stage-track">
+        ${STAGES.map((s,i) => `<div class="stage-seg ${l.stage === s ? 'active' : STAGES.indexOf(l.stage) > i ? 'done' : ''}"></div>`).join('')}
+      </div>
+      <div class="stage-labels">
+        ${STAGES.map(s => `<div class="stage-lbl ${l.stage === s ? 'active' : STAGES.indexOf(l.stage) > STAGES.indexOf(s) ? 'done' : ''}">${s}</div>`).join('')}
+      </div>
+    </div>
+    <div class="action-bar">
+      <button class="act-btn act-primary" onclick="generateScript('followup')">生成跟进话术</button>
+      <button class="act-btn act-ghost" onclick="generateScript('objection')">处理异议</button>
+      <button class="act-btn act-ghost" onclick="generateScript('close')">促成成交</button>
+      <div class="act-spacer"></div>
+      <button class="act-btn act-danger" onclick="openDefeatModal()">战败归因</button>
+    </div>
+    <div class="tl-area">
+      ${l.timeline.map(t => `
+        <div class="tl-item">
+          <div class="tl-icon" style="background:${t.emotion >= 4 ? 'rgba(52,211,153,0.1)' : t.emotion >= 3 ? 'rgba(251,191,36,0.1)' : 'rgba(248,113,113,0.1)'}; color:${t.emotion >= 4 ? 'var(--green)' : t.emotion >= 3 ? 'var(--amber)' : 'var(--red)'}">${t.icon}</div>
+          <div class="tl-body">
+            <div class="tl-hd">
+              <div class="tl-title">${t.title}</div>
+              <div class="tl-time">${t.time}</div>
+            </div>
+            <div class="tl-bubble">${t.content}</div>
+            <div class="tl-footer">
+              <div class="emo-stars">${'★'.repeat(t.emotion)}${'☆'.repeat(5-t.emotion)}</div>
+              <div class="tl-kw">${t.kws.join(' · ')}</div>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="ai-bar">
+      <div class="ai-pulse-dot"></div>
+      <div class="ai-bar-text">
+        <strong>AI分析完成</strong>：${l.name}当前处于${l.stage}阶段，${l.emotionState}情绪，建议${l.score >= 80 ? '立即推进' : l.score >= 60 ? '持续跟进' : '重点关注异议'}。
+      </div>
+    </div>
+  `;
+}
+
+// ══════════════ TAB SWITCH ══════════════
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.rtab').forEach(el => el.classList.toggle('active', el.id === `t-${tab}`));
+  renderRightPanel();
+}
+
+// ══════════════ RIGHT PANEL ══════════════
+function renderRightPanel() {
+  if (!selectedLead) return;
+  const l = selectedLead;
+  const panel = document.getElementById('rpanel');
+  if (currentTab === 'ai') {
+    panel.innerHTML = `
+      <div class="rcard">
+        <div class="rcard-title">🎯 销售策略建议</div>
+        <div style="margin-bottom:16px">
+          <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:12px">
+            基于客户画像和行为分析，AI推荐以下策略：
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div class="tactic-card" onclick="selectTactic(this, 'highlight-advantage')">
+              <div class="tc-top">
+                <div class="tc-style">优势突出</div>
+                <div class="tc-rate">85%</div>
+              </div>
+              <div class="tc-text">重点强调蔚来换电网络的便利性和NIO Life生态优势，弱化价格对比。</div>
+              <div class="tc-copy">
+                <button class="tc-copy-btn" onclick="copyTactic('highlight-advantage')">复制话术</button>
+              </div>
+            </div>
+            <div class="tactic-card" onclick="selectTactic(this, 'emotional-connection')">
+              <div class="tc-top">
+                <div class="tc-style">情感连接</div>
+                <div class="tc-rate">72%</div>
+              </div>
+              <div class="tc-text">分享用户故事和社区文化，建立情感共鸣，引导客户关注长期价值。</div>
+              <div class="tc-copy">
+                <button class="tc-copy-btn" onclick="copyTactic('emotional-connection')">复制话术</div>
+              </div>
+            </div>
+            <div class="tactic-card" onclick="selectTactic(this, 'practical-demo')">
+              <div class="tc-top">
+                <div class="tc-style">体验引导</div>
+                <div class="tc-rate">68%</div>
+              </div>
+              <div class="tc-text">邀请到店体验NOMI智能助手和换电服务，安排专业讲解和试驾。</div>
+              <div class="tc-copy">
+                <button class="tc-copy-btn" onclick="copyTactic('practical-demo')">复制话术</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="rcard">
+        <div class="rcard-title">📊 客户评分详情</div>
+        <div class="score-wrap">
+          <div class="ring-wrap">
+            <svg width="68" height="68">
+              <circle cx="34" cy="34" r="30" stroke="var(--bg5)" stroke-width="4" fill="none"/>
+              <circle cx="34" cy="34" r="30" stroke="var(--blue)" stroke-width="4" fill="none" stroke-dasharray="${2 * Math.PI * 30}" stroke-dashoffset="${2 * Math.PI * 30 * (1 - l.score / 100)}" transform="rotate(-90 34 34)"/>
+            </svg>
+            <div class="ring-num">${l.score}</div>
+          </div>
+          <div class="score-rows">
+            <div class="srow"><div class="srow-label">购买意向</div><div class="srow-val">${l.score >= 80 ? '高' : l.score >= 60 ? '中' : '低'}</div></div>
+            <div class="sbar"><div class="sbar-fill" style="width:${l.score}%"></div></div>
+            <div class="srow"><div class="srow-label">竞品倾向</div><div class="srow-val">${l.rivalScore || 0}</div></div>
+            <div class="sbar"><div class="sbar-fill" style="width:${l.rivalScore || 0}%"></div></div>
+            <div class="srow"><div class="srow-label">价格敏感度</div><div class="srow-val">${l.priceSens}</div></div>
+            <div class="sbar"><div class="sbar-fill" style="width:${l.priceSens === '高' ? 80 : l.priceSens === '中' ? 50 : 20}%"></div></div>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (currentTab === 'rival') {
+    panel.innerHTML = `
+      <div class="rcard">
+        <div class="rcard-title">🏁 竞品对比分析</div>
+        <div class="rival-compare">
+          <div class="rc-row">
+            <div class="rc-name">蔚来 ${l.model}</div>
+            <div class="rc-bar-wrap"><div class="rc-fill" style="width:85%;background:var(--blue)"></div></div>
+            <div class="rc-pct">85%</div>
+          </div>
+          <div class="rc-row">
+            <div class="rc-name">${l.rival || '竞品'}</div>
+            <div class="rc-bar-wrap"><div class="rc-fill" style="width:${l.rivalScore || 50}%;background:var(--red)"></div></div>
+            <div class="rc-pct">${l.rivalScore || 50}%</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.6">
+          <strong>优势：</strong>换电网络覆盖广，充电更便捷；NIO APP生态丰富，用户体验佳。<br>
+          <strong>劣势：</strong>购车成本较高，适合预算充足的用户。<br>
+          <strong>建议：</strong>突出长期使用价值，引导客户关注总拥有成本。
+        </div>
+      </div>
+    `;
+  } else if (currentTab === 'sched') {
+    panel.innerHTML = `
+      <div class="rcard">
+        <div class="rcard-title">📅 跟进计划</div>
+        <div class="schedule-list">
+          <div class="sched-item">
+            <div class="sched-time">今天 14:00</div>
+            <div class="sched-text">发送产品资料包，包含换电网络地图和用户评价</div>
+            <div class="sched-pri" style="background:rgba(52,211,153,0.1);color:var(--green)">高</div>
+          </div>
+          <div class="sched-item">
+            <div class="sched-time">明天 10:00</div>
+            <div class="sched-text">电话跟进，询问对资料的看法，解答疑问</div>
+            <div class="sched-pri" style="background:rgba(251,191,36,0.1);color:var(--amber)">中</div>
+          </div>
+          <div class="sched-item">
+            <div class="sched-time">后天 15:00</div>
+            <div class="sched-text">邀请到店体验，安排专业销售讲解</div>
+            <div class="sched-pri" style="background:rgba(52,211,153,0.1);color:var(--green)">高</div>
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (currentTab === 'log') {
+    panel.innerHTML = `
+      <div class="rcard">
+        <div class="rcard-title">📋 操作日志</div>
+        <div class="log-list">
+          ${ACTION_LOG.slice(-10).map(log => `
+            <div class="log-item log-${log.type}">
+              <div class="log-icon">${log.icon}</div>
+              <div class="log-t">${log.time}</div>
+              <div class="log-msg">${log.msg}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+}
+
+// ══════════════ SCRIPTS ══════════════
+function generateScript(type) {
+  if (!selectedLead) return;
+  const l = selectedLead;
+  let script = '';
+  if (type === 'followup') {
+    script = `您好${l.name}，我是蔚来${document.getElementById('topbar-store-pill').textContent.split('·')[1] || '北京朝阳店'}的销售顾问。我们注意到您对${l.model}很感兴趣，想了解一下您目前的考虑情况？`;
+  } else if (type === 'objection') {
+    script = `我理解您的顾虑。蔚来的换电模式相比传统充电有三大优势：1）3分钟换电，相当于500km续航；2）全国600+换电站覆盖；3）电池终身质保，不用担心衰减。您觉得这个方案如何？`;
+  } else if (type === 'close') {
+    script = `基于您的需求，${l.model}确实是非常合适的选择。现在下订可以享受首付低至20%、金融方案优惠等权益。需要我帮您办理吗？`;
+  }
+  navigator.clipboard.writeText(script);
+  showToast('话术已复制到剪贴板', 'ok');
+  ACTION_LOG.push({type:'ai', icon:'🤖', time:new Date().toLocaleTimeString(), msg:`生成${type}话术`});
+  renderRightPanel();
+}
+
+function selectTactic(el, tactic) {
+  document.querySelectorAll('.tactic-card').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+  selectedTactics = tactic;
+}
+
+function copyTactic(tactic) {
+  const scripts = {
+    'highlight-advantage': '蔚来最大的优势在于换电网络，全国600多个换电站，3分钟换电相当于500km续航。而且电池终身质保，使用成本更低。',
+    'emotional-connection': '选择蔚来不仅仅是买车，更是加入一个大家庭。我们的用户社区有超过100万车主，互相帮助，共享资源。',
+    'practical-demo': '建议您来店体验一下NOMI智能助手，它真的很聪明，能帮您做很多事情。而且我们的试驾车随时准备着。'
+  };
+  navigator.clipboard.writeText(scripts[tactic]);
+  showToast('话术已复制', 'ok');
+}
+
+// ══════════════ BRAND CONFIG ══════════════
+function openBrandConfig() {
+  document.getElementById('brand-config-modal').style.display = 'flex';
+}
+
+function closeBrandConfig() {
+  document.getElementById('brand-config-modal').style.display = 'none';
+}
+
+function saveBrandConfig() {
+  const brand = document.getElementById('cfg-brand').value || '蔚来';
+  const store = document.getElementById('cfg-store').value || '北京朝阳店';
+  const usp = document.getElementById('cfg-usp').value || '换电网络、NIO Life、社区文化';
+  document.getElementById('topbar-brand-name').textContent = brand + '销售助手';
+  document.getElementById('topbar-store-pill').textContent = `品牌 · ${store}`;
+  localStorage.setItem('brand', brand);
+  localStorage.setItem('store', store);
+  localStorage.setItem('usp', usp);
+  closeBrandConfig();
+  showToast('配置已保存', 'ok');
+}
+
+function updateModelHint() {
+  const model = document.getElementById('cfg-model').value;
+  const hints = {
+    deepseek: 'DeepSeek Chat：国内大模型，响应快速，适合生产环境使用。',
+    qwen: '通义千问：阿里云出品，模型能力均衡，稳定性好。',
+    zhipu: '智谱GLM：清华系模型，中文理解优秀，适合复杂对话。',
+    moonshot: '月之暗面：Kimi模型，推理能力强，适合专业咨询。',
+    demo: '演示模式：无需API Key，使用预设回复，适合体验功能。'
+  };
+  document.getElementById('cfg-model-hint').textContent = hints[model] || '';
+}
+
+// ══════════════ HELP MODAL ══════════════
+function openHelpModal() {
+  document.getElementById('helpGuideModal').style.display = 'flex';
+}
+
+function closeHelpModal() {
+  document.getElementById('helpGuideModal').style.display = 'none';
+}
+
+// ══════════════ DEFEAT ══════════════
+function openDefeatModal() {
+  if (!selectedLead) return;
+  document.getElementById('defeat-modal').style.display = 'flex';
+  document.getElementById('defeat-note').textContent = `AI分析${selectedLead.name}的战败原因...`;
+  setTimeout(() => {
+    document.getElementById('defeat-note').textContent = 'AI分析完成，建议主要原因是：竞品价格优势';
+    document.getElementById('reason-grid').innerHTML = DEFEAT_REASONS.map(r => `
+      <div class="reason-chip ${r.aiRec ? 'ai-rec' : ''}" onclick="selectReason('${r.label}')">${r.label}</div>
+    `).join('');
+  }, 1500);
+}
+
+function closeDefeat() {
+  document.getElementById('defeat-modal').style.display = 'none';
+  selectedReason = null;
+}
+
+function selectReason(reason) {
+  selectedReason = reason;
+  document.querySelectorAll('.reason-chip').forEach(c => c.classList.toggle('sel', c.textContent.trim() === reason));
+}
+
+function confirmDefeat() {
+  if (!selectedReason) return;
+  selectedLead.stage = '战败';
+  selectedLead.status = 'defeated';
+  showToast('战败已确认', 'warn');
+  ACTION_LOG.push({type:'human', icon:'💀', time:new Date().toLocaleTimeString(), msg:`标记${selectedLead.name}为战败：${selectedReason}`});
+  renderLeads();
+  renderCustomerView();
+  closeDefeat();
+}
+
+// ══════════════ BATCH DEFEAT ══════════════
+function openBatchDefeatModal() {
+  const lowLeads = LEADS.filter(l => l.score < 40);
+  document.getElementById('batch-low-count').textContent = lowLeads.length;
+  document.getElementById('batch-low-names').textContent = lowLeads.map(l => l.name).join('、');
+  document.getElementById('batch-confirm-count').textContent = lowLeads.length;
+  document.getElementById('batch-defeat-list').innerHTML = lowLeads.map(l => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <div style="width:20px;height:20px;border-radius:50%;background:${l.score >= 80 ? 'var(--green)' : l.score >= 60 ? 'var(--amber)' : 'var(--red)'};display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff">${l.score}</div>
+      <div style="flex:1">
+        <div style="font-size:12px;font-weight:600">${l.name}</div>
+        <div style="font-size:10px;color:var(--text3)">最后联系：${l.lastContact}</div>
+      </div>
+      <div style="font-size:11px;color:var(--text2)">竞品价格优势</div>
+    </div>
+  `).join('');
+  document.getElementById('batch-defeat-modal').style.display = 'flex';
+}
+
+function closeBatchDefeatModal() {
+  document.getElementById('batch-defeat-modal').style.display = 'none';
+}
+
+function confirmBatchDefeat() {
+  const lowLeads = LEADS.filter(l => l.score < 40);
+  lowLeads.forEach(l => {
+    l.stage = '战败';
+    l.status = 'defeated';
+  });
+  showToast(`批量战败 ${lowLeads.length} 条线索`, 'warn');
+  ACTION_LOG.push({type:'human', icon:'💀', time:new Date().toLocaleTimeString(), msg:`批量战败 ${lowLeads.length} 条低质线索`});
+  renderLeads();
+  closeBatchDefeatModal();
+  document.getElementById('batch-defeat-banner').style.display = 'none';
+}
+
+// ══════════════ FILTER ══════════════
+function toggleFilter(el, filter) {
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('on'));
+  el.classList.add('on');
+  activeFilter = filter;
+  renderLeads();
+}
+
+// ══════════════ TOAST ══════════════
+function showToast(msg, type = 'ai') {
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.innerHTML = `<span>${msg}</span>`;
+  document.getElementById('toasts').appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// ══════════════ INIT ══════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderLeads();
+  document.getElementById('cfg-brand').value = localStorage.getItem('brand') || '';
+  document.getElementById('cfg-store').value = localStorage.getItem('store') || '';
+  document.getElementById('cfg-usp').value = localStorage.getItem('usp') || '';
+  updateModelHint();
+});
+</script>
+</body>
+</html>
