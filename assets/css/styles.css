@@ -982,6 +982,39 @@ img {
     margin-top: 24px;
 }
 
+.pdf-card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 24px;
+    align-items: center;
+    margin: 36px 0 0;
+    padding: clamp(20px, 3vw, 32px);
+    border: 1px solid var(--pink-line);
+    border-radius: var(--radius);
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.pdf-card .eyebrow {
+    margin-bottom: 12px;
+}
+
+.pdf-card h4 {
+    margin: 0 0 10px;
+    color: var(--text);
+    font-size: clamp(18px, 2vw, 24px);
+}
+
+.pdf-card p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.pdf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
 .case-gallery {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
@@ -1285,6 +1318,10 @@ img {
     }
 
     .case-gallery {
+        grid-template-columns: 1fr;
+    }
+
+    .pdf-card {
         grid-template-columns: 1fr;
     }
 }
